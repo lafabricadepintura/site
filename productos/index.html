@@ -8,68 +8,93 @@
     <style>
         :root { --primary: #ffffff; --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; }
-        header { background: #252525; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; }
+        
+        header { 
+            background: #252525; padding: 1rem 2rem; position: sticky; top: 0; 
+            z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.5); 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
         .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.2rem; }
         nav a { text-decoration: none; color: white; margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
         nav a.active { color: var(--accent); }
+
         .search-section { background: #151515; padding: 30px 20px; text-align: center; }
-        .search-bar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; }
+        .search-bar { 
+            width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; 
+            border: 1px solid #333; background: #222; color: white; outline: none; 
+        }
+
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        
         .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
         .product-header { padding: 20px; background: #333; border-bottom: 1px solid #444; }
         .category-tag { font-size: 0.7rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
+        
         .price-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .price-table td { padding: 10px 0; border-top: 1px solid #383838; font-size: 0.9rem; }
         .amount { text-align: right; font-weight: bold; color: var(--accent); }
-        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
+        
+        .btn-whatsapp { 
+            display: block; background: #25d366; color: white; text-align: center; 
+            padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; 
+        }
     </style>
 </head>
 <body>
-    <header>
-        <a href="../index.html" class="logo-main">LA FÁBRICA <span style="color:var(--accent)">PINTURAS</span></a>
-        <nav>
-            <a href="index.html" class="active">PRODUCTOS</a>
-            <a href="../colores/index.html">COLORES</a>
-        </nav>
-    </header>
-    <section class="search-section">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar productos (Látex, Membrana...)">
-    </section>
-    <div class="container">
-        <div id="productContainer" class="product-grid"></div>
+
+<header>
+    <a href="../index.html" class="logo-main">LA FÁBRICA <span style="color:var(--accent)">PINTURAS</span></a>
+    <nav>
+        <a href="index.html" class="active">PRODUCTOS</a>
+        <a href="../colores/index.html">COLORES</a>
+    </nav>
+</header>
+
+<section class="search-section">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar productos (Látex, Membrana...)">
+</section>
+
+<div class="container">
+    <div id="productContainer" class="product-grid">
+        <p style="text-align: center; grid-column: 1/-1;">Cargando catálogo...</p>
     </div>
+</div>
 
 <script>
     let productsData = [];
 
-    // Función para limpiar texto de basura como
+    // Limpia etiquetas de cita y espacios
     function limpiar(t) {
         if (!t) return "";
         return t.toString().replace(/\/g, '').trim();
+    }
+
+    // Busca una columna que contenga cierta palabra sin usar / /
+    function buscarColumna(objeto, palabraClave) {
+        const keys = Object.keys(objeto);
+        const encontrada = keys.find(k => k.toLowerCase().includes(palabraClave.toLowerCase()));
+        return encontrada ? limpiar(objeto[encontrada]) : "";
     }
 
     async function load() {
         const cont = document.getElementById('productContainer');
         try {
             const resp = await fetch('productos.csv?v=' + Date.now());
-            if (!resp.ok) throw new Error("No se encontró el archivo productos.csv");
+            if (!resp.ok) throw new Error("No se pudo cargar el archivo CSV.");
             
-            const csv = await resp.text();
+            const csvText = await resp.text();
 
-            Papa.parse(csv, {
+            Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function(res) {
-                    console.log("Datos recibidos:", res.data); // Para revisar en la consola F12
                     productsData = res.data;
                     render(productsData);
                 }
             });
         } catch (e) {
-            cont.innerHTML = `<p style="color:#ff6b6b; text-align:center; grid-column:1/-1;">
-                Error: ${e.message}<br>Asegúrate de que productos.csv esté en la carpeta /productos/
-            </p>`;
+            cont.innerHTML = `<p style="color:#ff6b6b; text-align:center; grid-column:1/-1;">${e.message}</p>`;
         }
     }
 
@@ -78,63 +103,32 @@
         cont.innerHTML = '';
 
         if (data.length === 0) {
-            cont.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>No hay datos en el CSV.</p>";
+            cont.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>No hay productos para mostrar.</p>";
             return;
         }
 
         data.forEach(p => {
-            // BUSCADOR INTELIGENTE DE COLUMNAS (Para evitar errores de tildes o espacios)
-            const getVal = (regex) => {
-                const key = Object.keys(p).find(k => regex.test(k));
-                return key ? limpiar(p[key]) : "";
-            };
+            // Extraer datos usando la función de búsqueda simple
+            const nombre = buscarColumna(p, "prod");
+            const cat = buscarColumna(p, "cat") || "Pintura";
+            const desc = buscarColumna(p, "desc");
+            const p4 = buscarColumna(p, "4l") || "Cons.";
+            const p10 = buscarColumna(p, "10l") || "Cons.";
+            const p20 = buscarColumna(p, "20l") || "Cons.";
 
-            const nombre = getVal(/prod/i);
-            const cat = getVal(/cat/i) || "General";
-            const desc = getVal(/desc/i);
-            const p4 = getVal(/4l/i) || "Cons.";
-            const p10 = getVal(/10l/i) || "Cons.";
-            const p20 = getVal(/20l/i) || "Cons.";
-
-            if (!nombre) return; 
+            if (!nombre) return;
 
             const card = document.createElement('div');
             card.className = 'product-card';
             card.innerHTML = `
                 <div class="product-header">
-                    <span class="badge category-tag">${cat}</span>
+                    <span class="category-tag">${cat}</span>
                     <h3 style="margin:5px 0; color:white;">${nombre}</h3>
                 </div>
                 <div style="padding:20px">
                     <p style="font-size:0.85rem; color:#bbb; min-height:45px; margin-bottom:15px;">${desc}</p>
                     <table class="price-table">
                         <tr><td style="color:#888">Envase 4 lts</td><td class="amount">${p4}</td></tr>
-                        <tr><td style="color:#888">Envase 10 lts</td><td class="amount">${p10}</td></tr>
-                        <tr><td style="color:#888">Envase 20 lts</td><td class="amount">${p20}</td></tr>
-                    </table>
-                </div>
-                <div class="footer-card">
-                    <a href="https://wa.me/5491100000000" target="_blank" class="btn-whatsapp">Consultar WhatsApp</a>
-                </div>
-            `;
-            cont.appendChild(card);
-        });
-    }
-
-    document.getElementById('searchInput').oninput = (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = productsData.filter(p => {
-            const str = JSON.stringify(p).toLowerCase();
-            return str.includes(term);
-        });
-        render(filtered);
-    };
-
-    load();
-</script>
-</body>
-</html>
-
-
+                        <tr><td style="color:#888">Envase 10 lts</td><td
 
 
