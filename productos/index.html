@@ -84,7 +84,15 @@
 </div>
 
 <script>
+  <script>
     let productsData = [];
+
+    // Función para eliminar etiquetas tipo de los textos
+    function limpiarTexto(texto) {
+        if (!texto) return "";
+        // Esta expresión regular busca cualquier texto que empiece con
+        return texto.replace(/\/g, '').trim();
+    }
 
     async function loadProducts() {
         try {
@@ -116,17 +124,26 @@
         data.forEach(p => {
             const card = document.createElement('div');
             card.className = 'product-card';
+            
+            // Limpiamos los campos antes de usarlos
+            const nombre = limpiarTexto(p.Producto);
+            const categoria = limpiarTexto(p.Categoría);
+            const descripcion = limpiarTexto(p.Descripción);
+            const p4 = limpiarTexto(p['Precio 4lts']);
+            const p10 = limpiarTexto(p['Precio 10lts']);
+            const p20 = limpiarTexto(p['Precio 20lts']);
+
             card.innerHTML = `
                 <div class="product-header">
-                    <span class="badge category-tag">${p.Categoría}</span>
-                    <h3 class="product-title">${p.Producto}</h3>
+                    <span class="badge category-tag">${categoria}</span>
+                    <h3 class="product-title">${nombre}</h3>
                 </div>
                 <div class="product-body">
-                    <p class="description">${p.Descripción}</p>
+                    <p class="description">${descripcion}</p>
                     <table class="price-table">
-                        <tr><td class="size">Envase 4 lts</td><td class="amount">${p['Precio 4lts']}</td></tr>
-                        <tr><td class="size">Envase 10 lts</td><td class="amount">${p['Precio 10lts']}</td></tr>
-                        <tr><td class="size">Envase 20 lts</td><td class="amount">${p['Precio 20lts']}</td></tr>
+                        <tr><td class="size">Envase 4 lts</td><td class="amount">${p4}</td></tr>
+                        <tr><td class="size">Envase 10 lts</td><td class="amount">${p10}</td></tr>
+                        <tr><td class="size">Envase 20 lts</td><td class="amount">${p20}</td></tr>
                     </table>
                 </div>
                 <div class="footer-card">
@@ -140,15 +157,17 @@
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         const filtered = productsData.filter(p => 
-            p.Producto.toLowerCase().includes(term) || 
-            p.Categoría.toLowerCase().includes(term) ||
-            p.Descripción.toLowerCase().includes(term)
+            (p.Producto || "").toLowerCase().includes(term) || 
+            (p.Categoría || "").toLowerCase().includes(term) ||
+            (p.Descripción || "").toLowerCase().includes(term)
         );
         displayProducts(filtered);
     });
 
     loadProducts();
 </script>
+</script>
 
 </body>
 </html>
+
