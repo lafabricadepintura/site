@@ -3,166 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Global Paints | Carga Externa</title>
+    <title>Catálogo Global Paints | Limpio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --bg: #f8f9fa;
+        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f5f6fa; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        header { 
+            background: white; padding: 20px; position: sticky; top: 0; 
+            z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; 
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background: white;
-            padding: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .search-box {
-            width: 100%;
-            max-width: 500px;
-            padding: 12px 25px;
-            border: 2px solid #eee;
-            border-radius: 30px;
-            font-size: 16px;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .search-box:focus { border-color: var(--accent); }
-
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-
-        .loading-msg {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2rem;
-            color: #666;
-        }
-
-        .error-msg {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px;
-            border: 1px solid #f5c6cb;
-        }
-
+        .search-box { width: 90%; max-width: 500px; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
         .category-group { margin-bottom: 50px; scroll-margin-top: 150px; }
-
-        .category-title {
-            font-size: 1.8rem;
-            border-left: 6px solid var(--accent);
-            padding-left: 15px;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-
-        .color-preview { height: 130px; width: 100%; }
-
-        .details { padding: 15px; }
-
-        .name {
-            font-weight: bold;
-            font-size: 0.9rem;
-            display: block;
-            margin-bottom: 10px;
-            height: 35px;
-            overflow: hidden;
-        }
-
-        .meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: #888;
-        }
-
-        .hex { font-family: monospace; background: #f0f0f0; padding: 2px 5px; border-radius: 4px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .swatch { height: 120px; width: 100%; }
+        .info { padding: 15px; font-size: 0.9rem; }
+        .name { font-weight: bold; display: block; margin-bottom: 5px; }
+        .meta { color: #888; font-size: 0.8rem; display: flex; justify-content: space-between; }
+        #counter { font-size: 0.9rem; color: #666; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Catálogo de Colores Maestro</h1>
-    <input type="text" id="search" class="search-box" placeholder="Buscar por nombre, HEX o categoría...">
+    <input type="text" id="search" class="search-box" placeholder="Buscar color...">
+    <div id="counter">Cargando datos...</div>
 </header>
 
-<div class="container" id="main">
-    <div class="loading-msg" id="status">Cargando base de datos externa...</div>
-</div>
+<div class="container" id="main"></div>
 
 <script>
-    let fullDatabase = [];
-    const fileName = 'paleta - Hoja 1.csv'; // Asegúrate que el nombre coincida exactamente
+    let rawData = [];
+    const csvFile = 'paleta - Hoja 1.csv'; 
 
-    async function init() {
-        const statusEl = document.getElementById('status');
-        const mainEl = document.getElementById('main');
-
+    async function loadAndClean() {
         try {
-            // Consumir el archivo externamente
-            const response = await fetch(fileName);
-            
-            if (!response.ok) {
-                throw new Error(`No se pudo cargar el archivo "${fileName}". Verifique que el archivo esté en la misma carpeta y que esté usando un servidor local (Live Server).`);
-            }
-
+            const response = await fetch(csvFile);
             const csvString = await response.text();
 
-            // Procesar con PapaParse
             Papa.parse(csvString, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function(results) {
-                    fullDatabase = results.data;
-                    render(fullDatabase);
-                },
-                error: function(err) {
-                    throw new Error("Error al procesar el contenido del CSV.");
+                    // --- LÓGICA DE LIMPIEZA DE DUPLICADOS ---
+                    const seenIds = new Set();
+                    const seenHex = new Set();
+                    
+                    rawData = results.data.filter(item => {
+                        const id = item.color_id?.trim();
+                        const hex = item.color_hex?.trim().toLowerCase();
+                        
+                        if (!id || !hex || seenIds.has(id) || seenHex.has(hex)) {
+                            return false; // Es duplicado o está vacío, lo quitamos
+                        }
+                        
+                        seenIds.add(id);
+                        seenHex.add(hex);
+                        return true;
+                    });
+
+                    document.getElementById('counter').innerText = `Mostrando ${rawData.length} colores únicos`;
+                    render(rawData);
                 }
             });
-
-        } catch (error) {
-            mainEl.innerHTML = `
-                <div class="error-msg">
-                    <strong>⚠️ Error de carga:</strong> ${error.message}
-                    <br><br>
-                    <em>Nota: Si abres este archivo directamente (file://), el navegador bloqueará la carga. Usa <strong>Live Server</strong> en VS Code.</em>
-                </div>`;
+        } catch (e) {
+            document.getElementById('main').innerHTML = "Error al cargar el CSV externo.";
         }
     }
 
@@ -170,33 +78,26 @@
         const main = document.getElementById('main');
         main.innerHTML = '';
 
-        if (data.length === 0) {
-            main.innerHTML = '<div class="loading-msg">No se encontraron resultados.</div>';
-            return;
-        }
-
         const groups = data.reduce((acc, curr) => {
-            const type = curr.color_type || 'Otros';
+            const type = curr.color_type || 'General';
             if (!acc[type]) acc[type] = [];
             acc[type].push(curr);
             return acc;
         }, {});
 
-        Object.keys(groups).forEach(type => {
+        for (const type in groups) {
             const section = document.createElement('div');
             section.className = 'category-group';
-            section.id = type.replace(/\s+/g, '');
-
             section.innerHTML = `
-                <h2 class="category-title">${type} (${groups[type].length})</h2>
+                <h2 style="border-left: 5px solid var(--accent); padding-left: 10px;">${type}</h2>
                 <div class="grid">
                     ${groups[type].map(item => `
                         <div class="card" onclick="navigator.clipboard.writeText('${item.color_hex}')">
-                            <div class="color-preview" style="background: ${item.color_hex}"></div>
-                            <div class="details">
+                            <div class="swatch" style="background:${item.color_hex}"></div>
+                            <div class="info">
                                 <span class="name">${item.color_name}</span>
                                 <div class="meta">
-                                    <span class="hex">${item.color_hex}</span>
+                                    <span>${item.color_hex}</span>
                                     <span>ID: ${item.color_id}</span>
                                 </div>
                             </div>
@@ -205,23 +106,19 @@
                 </div>
             `;
             main.appendChild(section);
-        });
+        }
     }
 
-    // Buscador en tiempo real
     document.getElementById('search').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
-        const filtered = fullDatabase.filter(item => 
-            (item.color_name || '').toLowerCase().includes(term) || 
-            (item.color_hex || '').toLowerCase().includes(term) ||
-            (item.color_type || '').toLowerCase().includes(term)
+        const filtered = rawData.filter(item => 
+            item.color_name.toLowerCase().includes(term) || 
+            item.color_hex.toLowerCase().includes(term)
         );
         render(filtered);
     });
 
-    // Arrancar
-    init();
+    loadAndClean();
 </script>
-
 </body>
 </html>
