@@ -8,37 +8,22 @@
     <style>
         :root { --primary: #ffffff; --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; }
-        
-        header { 
-            background: #252525; padding: 1rem 2rem; position: sticky; top: 0; 
-            z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.5); 
-            display: flex; justify-content: space-between; align-items: center; 
-        }
+        header { background: #252525; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; }
         .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.2rem; }
         nav a { text-decoration: none; color: white; margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
         nav a.active { color: var(--accent); }
-
         .search-section { background: #151515; padding: 30px 20px; text-align: center; }
-        .search-bar { 
-            width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; 
-            border: 1px solid #333; background: #222; color: white; outline: none; 
-        }
-
+        .search-bar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        
         .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
         .product-header { padding: 20px; background: #333; border-bottom: 1px solid #444; }
         .category-tag { font-size: 0.7rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
-        
         .price-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .price-table td { padding: 10px 0; border-top: 1px solid #383838; font-size: 0.9rem; }
         .amount { text-align: right; font-weight: bold; color: var(--accent); }
-        
-        .btn-whatsapp { 
-            display: block; background: #25d366; color: white; text-align: center; 
-            padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; 
-        }
+        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; }
+        .error-box { background: #442222; color: #ffaaaa; padding: 20px; border-radius: 10px; border: 1px solid #ff5555; grid-column: 1/-1; text-align: center; }
     </style>
 </head>
 <body>
@@ -64,13 +49,10 @@
 <script>
     let productsData = [];
 
-    // Limpia etiquetas de cita y espacios
     function limpiar(t) {
-        if (!t) return "";
-        return t.toString().replace(/\/g, '').trim();
+        return t ? t.toString().replace(/\/g, '').trim() : "";
     }
 
-    // Busca una columna que contenga cierta palabra sin usar / /
     function buscarColumna(objeto, palabraClave) {
         const keys = Object.keys(objeto);
         const encontrada = keys.find(k => k.toLowerCase().includes(palabraClave.toLowerCase()));
@@ -81,20 +63,32 @@
         const cont = document.getElementById('productContainer');
         try {
             const resp = await fetch('productos.csv?v=' + Date.now());
-            if (!resp.ok) throw new Error("No se pudo cargar el archivo CSV.");
+            if (!resp.ok) throw new Error("No se pudo encontrar el archivo 'productos.csv'. Verifica que esté en la carpeta /productos/");
             
             const csvText = await resp.text();
 
             Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
+                dynamicTyping: true,
                 complete: function(res) {
+                    console.log("Columnas detectadas:", Object.keys(res.data[0] || {}));
+                    console.log("Datos:", res.data);
+                    
+                    if (res.data.length === 0) {
+                        cont.innerHTML = "<div class='error-box'>El archivo CSV está vacío.</div>";
+                        return;
+                    }
+                    
                     productsData = res.data;
                     render(productsData);
+                },
+                error: function(err) {
+                    cont.innerHTML = `<div class='error-box'>Error al procesar el CSV: ${err}</div>`;
                 }
             });
         } catch (e) {
-            cont.innerHTML = `<p style="color:#ff6b6b; text-align:center; grid-column:1/-1;">${e.message}</p>`;
+            cont.innerHTML = `<div class='error-box'>Error de sistema: ${e.message}</div>`;
         }
     }
 
@@ -102,12 +96,7 @@
         const cont = document.getElementById('productContainer');
         cont.innerHTML = '';
 
-        if (data.length === 0) {
-            cont.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>No hay productos para mostrar.</p>";
-            return;
-        }
-
-       data.forEach(p => {
+        data.forEach(p => {
             const nombre = buscarColumna(p, "prod");
             if (!nombre) return; 
 
@@ -147,6 +136,5 @@
 </script>
 </body>
 </html>
-
 
 
