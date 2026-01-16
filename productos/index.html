@@ -6,24 +6,41 @@
     <title>Productos | La Fábrica</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #ffffff; --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
+        :root { --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; }
-        header { background: #252525; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; }
+        
+        header { 
+            background: #252525; padding: 1rem 2rem; position: sticky; top: 0; 
+            z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.5); 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
         .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.2rem; }
         nav a { text-decoration: none; color: white; margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
         nav a.active { color: var(--accent); }
+
         .search-section { background: #151515; padding: 30px 20px; text-align: center; }
-        .search-bar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; }
+        .search-bar { 
+            width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; 
+            border: 1px solid #333; background: #222; color: white; outline: none; 
+        }
+
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
+        
+        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; display: flex; flex-direction: column; }
         .product-header { padding: 20px; background: #333; border-bottom: 1px solid #444; }
         .category-tag { font-size: 0.7rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
+        
         .price-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .price-table td { padding: 10px 0; border-top: 1px solid #383838; font-size: 0.9rem; }
         .amount { text-align: right; font-weight: bold; color: var(--accent); }
-        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; }
-        .error-box { background: #442222; color: #ffaaaa; padding: 20px; border-radius: 10px; border: 1px solid #ff5555; grid-column: 1/-1; text-align: center; }
+        
+        .btn-whatsapp { 
+            display: block; background: #25d366; color: white; text-align: center; 
+            padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; 
+        }
+        .status-msg { grid-column: 1/-1; text-align: center; padding: 40px; color: #888; }
+        .error-box { background: #422; color: #f88; padding: 20px; border-radius: 10px; border: 1px solid #844; }
     </style>
 </head>
 <body>
@@ -37,104 +54,33 @@
 </header>
 
 <section class="search-section">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar productos (Látex, Membrana...)">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar productos...">
 </section>
 
 <div class="container">
     <div id="productContainer" class="product-grid">
-        <p style="text-align: center; grid-column: 1/-1;">Cargando catálogo...</p>
+        <div id="status" class="status-msg">Cargando catálogo...</div>
     </div>
 </div>
 
 <script>
     let productsData = [];
 
-    function limpiar(t) {
-        return t ? t.toString().replace(/\/g, '').trim() : "";
-    }
-
-    function buscarColumna(objeto, palabraClave) {
-        const keys = Object.keys(objeto);
-        const encontrada = keys.find(k => k.toLowerCase().includes(palabraClave.toLowerCase()));
-        return encontrada ? limpiar(objeto[encontrada]) : "";
-    }
-
-    async function load() {
-        const cont = document.getElementById('productContainer');
-        try {
-            const resp = await fetch('productos.csv?v=' + Date.now());
-            if (!resp.ok) throw new Error("No se pudo encontrar el archivo 'productos.csv'. Verifica que esté en la carpeta /productos/");
-            
-            const csvText = await resp.text();
-
-            Papa.parse(csvText, {
-                header: true,
-                skipEmptyLines: true,
-                dynamicTyping: true,
-                complete: function(res) {
-                    console.log("Columnas detectadas:", Object.keys(res.data[0] || {}));
-                    console.log("Datos:", res.data);
-                    
-                    if (res.data.length === 0) {
-                        cont.innerHTML = "<div class='error-box'>El archivo CSV está vacío.</div>";
-                        return;
-                    }
-                    
-                    productsData = res.data;
-                    render(productsData);
-                },
-                error: function(err) {
-                    cont.innerHTML = `<div class='error-box'>Error al procesar el CSV: ${err}</div>`;
-                }
-            });
-        } catch (e) {
-            cont.innerHTML = `<div class='error-box'>Error de sistema: ${e.message}</div>`;
+    // Limpieza segura sin usar literales de regex que causan SyntaxError
+    function limpiarTexto(t) {
+        if (!t) return "";
+        let texto = t.toString();
+        // Eliminamos las citas de forma manual y segura
+        while (texto.includes("", start);
+            if (start !== -1 && end !== -1) {
+                texto = texto.substring(0, start) + texto.substring(end + 1);
+            } else {
+                break;
+            }
         }
+        return texto.trim();
     }
 
-    function render(data) {
-        const cont = document.getElementById('productContainer');
-        cont.innerHTML = '';
-
-        data.forEach(p => {
-            const nombre = buscarColumna(p, "prod");
-            if (!nombre) return; 
-
-            const cat = buscarColumna(p, "cat") || "Pintura";
-            const desc = buscarColumna(p, "desc");
-            const p4 = buscarColumna(p, "4l") || "Cons.";
-            const p10 = buscarColumna(p, "10l") || "Cons.";
-            const p20 = buscarColumna(p, "20l") || "Cons.";
-
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <div class="product-header">
-                    <span class="category-tag">${cat}</span>
-                    <h3 style="margin:5px 0; color:white;">${nombre}</h3>
-                </div>
-                <div style="padding:20px">
-                    <p style="font-size:0.85rem; color:#bbb; min-height:45px; margin-bottom:15px;">${desc}</p>
-                    <table class="price-table">
-                        <tr><td style="color:#888">Envase 4 lts</td><td class="amount">${p4}</td></tr>
-                        <tr><td style="color:#888">Envase 10 lts</td><td class="amount">${p10}</td></tr>
-                        <tr><td style="color:#888">Envase 20 lts</td><td class="amount">${p20}</td></tr>
-                    </table>
-                </div>
-                <a href="https://wa.me/5491100000000" class="btn-whatsapp" target="_blank">Consultar WhatsApp</a>
-            `;
-            cont.appendChild(card);
-        });
-    }
-
-    document.getElementById('searchInput').oninput = (e) => {
-        const term = e.target.value.toLowerCase();
-        render(productsData.filter(p => JSON.stringify(p).toLowerCase().includes(term)));
-    };
-
-    load();
-</script>
-</body>
-</html>
+    //
 
 
