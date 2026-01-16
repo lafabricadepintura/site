@@ -6,23 +6,23 @@
     <title>Productos | La Fábrica</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #1a1a1a; --accent: #8bc34a; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
-        header { background: white; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .logo-main { font-weight: bold; text-decoration: none; color: var(--primary); }
-        nav a { text-decoration: none; color: var(--primary); margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
+        :root { --primary: #ffffff; --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; }
+        header { background: #252525; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; }
+        .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.2rem; }
+        nav a { text-decoration: none; color: white; margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
         nav a.active { color: var(--accent); }
-        .search-section { background: var(--primary); padding: 30px 20px; text-align: center; }
-        .search-bar { width: 100%; max-width: 500px; padding: 12px; border-radius: 25px; border: none; outline: none; }
+        .search-section { background: #151515; padding: 30px 20px; text-align: center; }
+        .search-bar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .product-header { padding: 20px; background: #fafafa; border-bottom: 1px solid #eee; }
+        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
+        .product-header { padding: 20px; background: #333; border-bottom: 1px solid #444; }
         .category-tag { font-size: 0.7rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
         .price-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .price-table td { padding: 8px 0; border-top: 1px solid #f0f0f0; }
-        .amount { text-align: right; font-weight: bold; }
-        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 10px; text-decoration: none; font-weight: bold; }
+        .price-table td { padding: 10px 0; border-top: 1px solid #383838; font-size: 0.9rem; }
+        .amount { text-align: right; font-weight: bold; color: var(--accent); }
+        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -34,104 +34,62 @@
         </nav>
     </header>
     <section class="search-section">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar productos...">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar productos (Látex, Membrana...)">
     </section>
     <div class="container">
         <div id="productContainer" class="product-grid"></div>
     </div>
 
-  <script>
-    let productsData = [];
+    <script>
+        let productsData = [];
+        function limpiar(t) { return t ? t.toString().replace(/\/g, '').trim() : ""; }
 
-    // Función de limpieza profunda para eliminar y espacios invisibles
-    function limpiar(texto) {
-        if (!texto) return "";
-        return texto.toString().replace(/\/g, '').trim();
-    }
-
-    async function load() {
-        const cont = document.getElementById('productContainer');
-        try {
-            // Añadimos un timestamp para evitar que el navegador use una versión vieja (cache)
-            const resp = await fetch('productos.csv?v=' + Date.now());
-            
-            if (!resp.ok) throw new Error("No se encontró productos.csv en esta carpeta");
-            
-            const csv = await resp.text();
-
-            Papa.parse(csv, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(res) {
-                    if (res.data && res.data.length > 0) {
+        async function load() {
+            try {
+                const resp = await fetch('productos.csv?v=' + Date.now());
+                const csv = await resp.text();
+                Papa.parse(csv, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(res) {
                         productsData = res.data;
                         render(productsData);
-                    } else {
-                        cont.innerHTML = "<p>El archivo CSV está vacío o mal formateado.</p>";
                     }
-                },
-                error: function(err) {
-                    cont.innerHTML = "<p>Error al procesar el CSV: " + err + "</p>";
-                }
-            });
-        } catch (e) {
-            cont.innerHTML = `<p style="color:red">Error de carga: ${e.message}</p>`;
+                });
+            } catch (e) { console.error("Error cargando CSV"); }
         }
-    }
 
-    function render(data) {
-        const cont = document.getElementById('productContainer');
-        cont.innerHTML = '';
-
-        data.forEach(p => {
-            // Buscamos las columnas ignorando mayúsculas o espacios extra
-            const nombre = limpiar(p.Producto || p.producto);
-            const cat = limpiar(p.Categoría || p.categoria || "Pintura");
-            const desc = limpiar(p.Descripción || p.descripcion);
-            const p4 = limpiar(p['Precio 4lts'] || p.precio4);
-            const p10 = limpiar(p['Precio 10lts'] || p.precio10);
-            const p20 = limpiar(p['Precio 20lts'] || p.precio20);
-
-            if (!nombre) return; // Saltear filas vacías
-
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <div class="product-header">
-                    <span class="category-tag">${cat}</span>
-                    <h3 style="margin:5px 0">${nombre}</h3>
+        function render(data) {
+            const cont = document.getElementById('productContainer');
+            cont.innerHTML = data.map(p => {
+                if(!p.Producto) return '';
+                return `
+                <div class="product-card">
+                    <div class="product-header">
+                        <span class="category-tag">${limpiar(p.Categoría)}</span>
+                        <h3 style="margin:5px 0; color:white;">${limpiar(p.Producto)}</h3>
+                    </div>
+                    <div style="padding:20px">
+                        <p style="font-size:0.85rem; color:#bbb; min-height:45px; margin-bottom:15px;">${limpiar(p.Descripción)}</p>
+                        <table class="price-table">
+                            <tr><td>4 lts</td><td class="amount">${limpiar(p['Precio 4lts'])}</td></tr>
+                            <tr><td>10 lts</td><td class="amount">${limpiar(p['Precio 10lts'])}</td></tr>
+                            <tr><td>20 lts</td><td class="amount">${limpiar(p['Precio 20lts'])}</td></tr>
+                        </table>
+                    </div>
+                    <a href="https://wa.me/5491100000000" class="btn-whatsapp">Consultar WhatsApp</a>
                 </div>
-                <div style="padding:20px">
-                    <p style="font-size:0.9rem; color:#666; min-height:40px">${desc}</p>
-                    <table class="price-table">
-                        <tr><td>Envase 4 lts</td><td class="amount">${p4 || 'Consultar'}</td></tr>
-                        <tr><td>Envase 10 lts</td><td class="amount">${p10 || 'Consultar'}</td></tr>
-                        <tr><td>Envase 20 lts</td><td class="amount">${p20 || 'Consultar'}</td></tr>
-                    </table>
-                </div>
-                <div class="footer-card">
-                    <a href="https://wa.me/5491100000000" target="_blank" class="btn-whatsapp">CONSULTAR WHATSAPP</a>
-                </div>
-            `;
-            cont.appendChild(card);
-        });
-    }
+            `}).join('');
+        }
 
-    document.getElementById('searchInput').oninput = (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = productsData.filter(p => 
-            (p.Producto || "").toLowerCase().includes(term) || 
-            (p.Categoría || "").toLowerCase().includes(term)
-        );
-        render(filtered);
-    };
-
-    // Iniciar carga
-    load();
-</script>
+        document.getElementById('searchInput').oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            render(productsData.filter(p => (p.Producto||'').toLowerCase().includes(term) || (p.Categoría||'').toLowerCase().includes(term)));
+        };
+        load();
+    </script>
 </body>
 </html>
-
 
 
 
