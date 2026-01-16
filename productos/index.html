@@ -16,14 +16,14 @@
         .search-bar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; }
+        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; height: 100%; transition: 0.3s; }
+        .product-card:hover { border-color: var(--accent); transform: translateY(-5px); }
         .product-header { padding: 20px; background: #333; border-bottom: 1px solid #444; }
         .category-tag { font-size: 0.7rem; font-weight: bold; color: var(--accent); text-transform: uppercase; }
         .price-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .price-table td { padding: 10px 0; border-top: 1px solid #383838; font-size: 0.9rem; }
         .amount { text-align: right; font-weight: bold; color: var(--accent); }
-        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; }
-        .error-msg { grid-column: 1/-1; text-align: center; padding: 50px; color: #ff8888; }
+        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; text-transform: uppercase; margin-top: auto; }
     </style>
 </head>
 <body>
@@ -49,32 +49,40 @@
 <script>
     let productsData = [];
 
-    // Limpia las etiquetas de los textos
-    function limpiarTexto(texto) {
+    // FUNCIÓN DE LIMPIEZA SIN REGEX (Evita el SyntaxError)
+    function limpiarTextoSeguro(texto) {
         if (!texto) return "";
-        return texto.toString().replace(/\/g, "").trim();
+        let s = texto.toString();
+        // Elimina manualmente cualquier cosa que empiece con
+        while (s.indexOf("", inicio);
+            if (fin !== -1) {
+                s = s.substring(0, inicio) + s.substring(fin + 1);
+            } else {
+                break;
+            }
+        }
+        return s.trim();
     }
 
     async function cargarCSV() {
         const status = document.getElementById('status');
         try {
+            // Fetch con cache-buster para asegurar datos nuevos
             const response = await fetch('productos.csv?v=' + Date.now());
-            if (!response.ok) throw new Error("No se encontró el archivo productos.csv");
+            if (!response.ok) throw new Error("Archivo CSV no encontrado");
             
             const rawData = await response.text();
             
             Papa.parse(rawData, {
                 header: true,
                 skipEmptyLines: true,
-                // Forzamos la detección de punto y coma si es necesario
                 complete: function(results) {
-                    console.log("Columnas detectadas:", results.meta.fields);
                     productsData = results.data;
                     render(productsData);
                 }
             });
         } catch (e) {
-            status.innerHTML = "Error: " + e.message;
+            status.innerHTML = "Error al cargar: " + e.message;
         }
     }
 
@@ -82,16 +90,21 @@
         const container = document.getElementById('productContainer');
         container.innerHTML = "";
 
+        if (data.length === 0) {
+            container.innerHTML = "<p style='grid-column:1/-1; text-align:center;'>No se encontraron productos.</p>";
+            return;
+        }
+
         data.forEach(item => {
-            // Mapeo manual según las columnas de TU archivo CSV
-            const nombre = limpiarTexto(item["Producto"]);
+            // Mapeo exacto de tus columnas
+            const nombre = limpiarTextoSeguro(item["Producto"]);
             if (!nombre) return;
 
-            const categoria = limpiarTexto(item["Categoría"]);
-            const descripcion = limpiarTexto(item["Descripción"]);
-            const p4 = limpiarTexto(item["Precio 4lts"]);
-            const p10 = limpiarTexto(item["Precio 10lts"]);
-            const p20 = limpiarTexto(item["Precio 20lts"]);
+            const categoria = limpiarTextoSeguro(item["Categoría"]);
+            const descripcion = limpiarTextoSeguro(item["Descripción"]);
+            const p4 = limpiarTextoSeguro(item["Precio 4lts"]);
+            const p10 = limpiarTextoSeguro(item["Precio 10lts"]);
+            const p20 = limpiarTextoSeguro(item["Precio 20lts"]);
 
             const card = document.createElement('div');
             card.className = 'product-card';
@@ -103,22 +116,23 @@
                 <div style="padding:20px; flex-grow:1">
                     <p style="font-size:0.85rem; color:#bbb; margin-bottom:15px; min-height:40px;">${descripcion}</p>
                     <table class="price-table">
-                        <tr><td style="color:#888">Envase 4 lts</td><td class="amount">${p4}</td></tr>
-                        <tr><td style="color:#888">Envase 10 lts</td><td class="amount">${p10}</td></tr>
-                        <tr><td style="color:#888">Envase 20 lts</td><td class="amount">${p20}</td></tr>
+                        <tr><td style="color:#888">4 lts</td><td class="amount">${p4}</td></tr>
+                        <tr><td style="color:#888">10 lts</td><td class="amount">${p10}</td></tr>
+                        <tr><td style="color:#888">20 lts</td><td class="amount">${p20}</td></tr>
                     </table>
                 </div>
-                <a href="https://wa.me/5491100000000" class="btn-whatsapp" target="_blank">Consultar WhatsApp</a>
+                <a href="https://wa.me/5491100000000" class="btn-whatsapp" target="_blank">CONSULTAR</a>
             `;
             container.appendChild(card);
         });
     }
 
-    document.getElementById('searchInput').oninput = (e) => {
+    document.getElementById('searchInput').oninput = function(e) {
         const term = e.target.value.toLowerCase();
-        const filtered = productsData.filter(p => 
-            JSON.stringify(p).toLowerCase().includes(term)
-        );
+        const filtered = productsData.filter(p => {
+            return (p["Producto"] || "").toLowerCase().includes(term) || 
+                   (p["Categoría"] || "").toLowerCase().includes(term);
+        });
         render(filtered);
     };
 
@@ -126,4 +140,3 @@
 </script>
 </body>
 </html>
-
