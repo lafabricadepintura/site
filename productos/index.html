@@ -34,16 +34,22 @@
 
 <header>
     <a href="../index.html" class="logo-main">LA FÁBRICA <span style="color:var(--accent)">PINTURAS</span></a>
+    <nav>
+        <a href="index.html" class="active">PRODUCTOS</a>
+        <a href="../colores/index.html">COLORES</a>
+    </nav>
 </header>
 
 <section class="search-section">
     <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto...">
     <div class="filter-container" id="filterBadges">
-        <div class="filter-badge active" onclick="filtrarCategoria('Todos', this)">Todos</div>
-        <div class="filter-badge" onclick="filtrarCategoria('Látex', this)">Látex</div>
-        <div class="filter-badge" onclick="filtrarCategoria('Impermeabilizante', this)">Muros</div>
-        <div class="filter-badge" onclick="filtrarCategoria('Techos', this)">Techos</div>
-        <div class="filter-badge" onclick="filtrarCategoria('Sintético', this)">Sintéticos</div>
+        <div class="filter-badge active" data-cat="Todos">Todos</div>
+        <div class="filter-badge" data-cat="Látex">Látex</div>
+        <div class="filter-badge" data-cat="Impermeabilizante">Muros</div>
+        <div class="filter-badge" data-cat="Techos">Techos</div>
+        <div class="filter-badge" data-cat="Sintético">Sintéticos</div>
+        <div class="filter-badge" data-cat="Maderas">Maderas</div>
+        <div class="filter-badge" data-cat="Pisos">Pisos</div>
     </div>
 </section>
 
@@ -104,6 +110,7 @@
 </script>
 </body>
 </html>
+
 
 
 
