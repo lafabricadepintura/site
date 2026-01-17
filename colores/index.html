@@ -16,8 +16,8 @@
             top: 0; z-index: 1000; margin: 0; 
         }
         .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.2rem; }
-        nav a { text-decoration: none; color: #bbb; margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
-        nav a.active { color: var(--accent); }
+        nav a { text-decoration: none; color: #bbb; margin-left: 20px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
+        nav a:hover, nav a.active { color: var(--accent); }
 
         .search-section { 
             background: #151515; padding: 20px; text-align: center; 
@@ -91,6 +91,15 @@
     let colorData = [];
     let activeFamily = null; 
 
+    // Función para normalizar texto (quitar tildes y mayúsculas)
+    const simplifyText = (text) => {
+        if (!text) return "";
+        return text.toString()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+    };
+
     function loadCSV() {
         Papa.parse("paleta - Hoja 1.csv", {
             download: true, header: true, skipEmptyLines: true,
@@ -134,10 +143,7 @@
         activeFamily = f;
         document.querySelectorAll('.filter-badge').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-        
-        // Efecto subir arriba del todo
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        
         renderStructured();
     }
 
@@ -150,29 +156,30 @@
         activeFamily = null;
         document.getElementById("colorSearch").value = "";
         createFamilyBadges();
-        
-        // Efecto subir arriba del todo
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        
         renderStructured();
     }
 
     function renderStructured() {
         const container = document.getElementById("mainRenderSpace");
-        const search = document.getElementById("colorSearch").value.trim().toLowerCase();
+        const rawSearch = document.getElementById("colorSearch").value.trim();
+        const search = simplifyText(rawSearch);
         const clearBtn = document.getElementById("clearBtn");
-        clearBtn.style.display = search.length > 0 ? "block" : "none";
+        
+        clearBtn.style.display = rawSearch.length > 0 ? "block" : "none";
         container.innerHTML = "";
 
         // CASO 1: BÚSQUEDA
         if (search.length > 0) {
             let baseData = activeFamily ? colorData.filter(c => getFamily(c.color_type) === activeFamily) : colorData;
-            const filtrados = baseData.filter(c => 
-                (c.color_name && c.color_name.toLowerCase().includes(search)) || 
-                (c.color_id && c.color_id.toLowerCase().includes(search))
-            ).slice(0, 300);
+            
+            const filtrados = baseData.filter(c => {
+                const name = simplifyText(c.color_name);
+                const id = simplifyText(c.color_id);
+                return name.includes(search) || id.includes(search);
+            }).slice(0, 300);
 
-            container.innerHTML = `<div class="sub-title">Resultados: ${search}</div><div class="color-grid">${filtrados.map(c => generateCard(c)).join('')}</div>`;
+            container.innerHTML = `<div class="sub-title">Resultados: ${rawSearch}</div><div class="color-grid">${filtrados.map(c => generateCard(c)).join('')}</div>`;
             return;
         }
 
