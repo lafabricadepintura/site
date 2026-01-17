@@ -295,12 +295,12 @@
 
     function orderProduct() {
         const product = document.getElementById('productSelect').value;
-        const msg = `Hola La Fábrica! 👋\nQuisiera consultar precio de:\n📦 *${product}*\n🎨 Color: *${selectedColor.color_name}* (Cód: ${selectedColor.color_id})`;
+        const msg = `Hola La Fábrica! \nQuisiera consultar precio de:\n *${product}*\n Color: *${selectedColor.color_name}*`;
         window.open(`https://wa.me/542214989579?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function sendGeneralColorQuery() {
-        const msg = `Hola La Fábrica! 🎨 Me interesa este color de la paleta digital:\n🌟 *${selectedColor.color_name}*\n🔢 Código: *${selectedColor.color_id}*\n\n¿En qué presentaciones viene?`;
+        const msg = `Hola La Fábrica! Me interesa este color de la paleta digital: \n*${selectedColor.color_name}\n\n¿En qué presentaciones viene?`;
         window.open(`https://wa.me/542214989579?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
