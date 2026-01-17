@@ -7,33 +7,62 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root { --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; }
         
-        /* NAVBAR CORREGIDA */
         header { 
             background: #252525; padding: 1rem 2rem; display: flex; 
             justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 15px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.5); position: sticky; 
+            top: 0; z-index: 1000; margin: 0; 
         }
         .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.2rem; }
         nav a { text-decoration: none; color: #bbb; margin-left: 20px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
         nav a:hover, nav a.active { color: var(--accent); }
 
-        .search-section { background: #151515; padding: 20px; text-align: center; }
-        .search-bar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; margin-bottom: 15px; }
+        .search-section { 
+            background: #151515; padding: 20px; text-align: center; 
+            position: sticky; top: 57px; z-index: 999; margin: 0;
+            border-top: 1px solid #222;
+        }
+        .search-container { position: relative; max-width: 500px; margin: 0 auto 15px; }
+        .search-bar { 
+            width: 100%; padding: 12px 45px 12px 20px; border-radius: 25px; 
+            border: 1px solid #333; background: #222; color: white; outline: none; 
+            font-size: 1rem; box-sizing: border-box;
+        }
+        .search-bar:focus { border-color: var(--accent); }
         
-        .filter-container { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
-        .filter-badge { padding: 6px 14px; border-radius: 20px; background: #333; font-size: 0.75rem; cursor: pointer; border: 1px solid #444; color: #bbb; }
-        .filter-badge.active { background: var(--accent); color: #000; font-weight: bold; }
+        .clear-search {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            background: #444; color: white; border: none; border-radius: 50%;
+            width: 22px; height: 22px; cursor: pointer; display: none;
+            font-size: 12px; line-height: 1; font-weight: bold;
+        }
 
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; }
+        .filter-group { margin-bottom: 10px; }
+        .filter-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto; align-items: center; }
+        .filter-badge { padding: 6px 14px; border-radius: 15px; background: #333; font-size: 0.75rem; cursor: pointer; border: 1px solid #444; color: #eee; transition: 0.2s; }
+        .filter-badge.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
+        
+        .btn-reset { 
+            padding: 6px 14px; border-radius: 15px; background: transparent; 
+            color: #ff5252; border: 1px solid #ff5252; cursor: pointer; 
+            font-size: 0.7rem; font-weight: bold; margin-left: 10px;
+        }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; min-height: 100vh; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: 0.3s; }
+        .product-card:hover { transform: translateY(-3px); border-color: #555; }
         .product-header { padding: 15px; background: #333; border-bottom: 1px solid #444; }
+        .tag-row { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+        .tag { font-size: 0.6rem; font-weight: bold; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: #444; color: #ccc; }
+        .tag-cat { background: rgba(139, 195, 74, 0.2); color: var(--accent); }
+
         .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .price-table td { padding: 10px 0; border-top: 1px solid #3d3d3d; font-size: 0.9rem; }
-        .amount { text-align: right; font-weight: bold; color: var(--accent); }
-        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; }
+        .price-table td { padding: 10px 0; border-top: 1px solid #3d3d3d; font-size: 0.85rem; }
+        .amount { text-align: right; font-weight: bold; color: var(--accent); font-size: 0.95rem; }
+        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -47,14 +76,16 @@
 </header>
 
 <section class="search-section">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto...">
-    <div class="filter-container">
-        <div class="filter-badge active" data-cat="Todos">Todos</div>
-        <div class="filter-badge" data-cat="Látex">Látex</div>
-        <div class="filter-badge" data-cat="Impermeabilizante">Muros</div>
-        <div class="filter-badge" data-cat="Techos">Techos</div>
-        <div class="filter-badge" data-cat="Sintético">Sintéticos</div>
-        <div class="filter-badge" data-cat="Maderas">Maderas</div>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar látex, sintético, madera...">
+        <button id="clearBtn" class="clear-search" onclick="clearSearch()">✕</button>
+    </div>
+    
+    <div class="filter-group">
+        <div class="filter-container" id="catBadgeContainer"></div>
+    </div>
+    <div class="filter-group">
+        <div class="filter-container" id="typeBadgeContainer"></div>
     </div>
 </section>
 
@@ -65,60 +96,108 @@
 <script>
     let rawData = [];
     let currentCat = "Todos";
+    let currentType = "Todos";
+
+    // Función mágica para quitar tildes
+    const simplifyText = (text) => {
+        if (!text) return "";
+        return text.toString()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+    };
 
     function loadCSV() {
         Papa.parse("productos.csv", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) {
                 rawData = results.data;
+                createAllBadges();
                 render();
             }
         });
     }
 
+    function createAllBadges() {
+        const catSet = new Set();
+        const typeSet = new Set();
+        rawData.forEach(p => {
+            if (p.Categoría) p.Categoría.split(',').forEach(c => catSet.add(c.trim()));
+            if (p.Tipo) p.Tipo.split(',').forEach(t => typeSet.add(t.trim()));
+        });
+
+        const catContainer = document.getElementById("catBadgeContainer");
+        let catHtml = `<div class="filter-badge ${currentCat === 'Todos' ? 'active' : ''}" onclick="setCategory('Todos')">Categorías</div>`;
+        Array.from(catSet).sort().forEach(c => {
+            catHtml += `<div class="filter-badge ${currentCat === c ? 'active' : ''}" onclick="setCategory('${c}')">${c}</div>`;
+        });
+        catContainer.innerHTML = catHtml;
+
+        const typeContainer = document.getElementById("typeBadgeContainer");
+        let typeHtml = `<div class="filter-badge ${currentType === 'Todos' ? 'active' : ''}" onclick="setType('Todos')">Usos</div>`;
+        Array.from(typeSet).sort().forEach(t => {
+            typeHtml += `<div class="filter-badge ${currentType === t ? 'active' : ''}" onclick="setType('${t}')">${t}</div>`;
+        });
+        typeHtml += `<button class="btn-reset" onclick="resetAll()">Limpiar Filtros</button>`;
+        typeContainer.innerHTML = typeHtml;
+    }
+
+    function setCategory(cat) { currentCat = cat; createAllBadges(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function setType(type) { currentType = type; createAllBadges(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function clearSearch() { document.getElementById("searchInput").value = ""; render(); }
+    function resetAll() { currentCat = "Todos"; currentType = "Todos"; document.getElementById("searchInput").value = ""; createAllBadges(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
     function render() {
         const container = document.getElementById("productContainer");
-        const search = document.getElementById("searchInput").value.toLowerCase();
+        const rawSearch = document.getElementById("searchInput").value;
+        const search = simplifyText(rawSearch); // Normalizamos la búsqueda
+        const clearBtn = document.getElementById("clearBtn");
+        
+        clearBtn.style.display = rawSearch.length > 0 ? "block" : "none";
         let html = "";
 
-        rawData.filter(p => {
+        const filtrados = rawData.filter(p => {
             if (!p.Producto) return false;
-            const mSearch = p.Producto.toLowerCase().includes(search) || p.Descripción.toLowerCase().includes(search);
-            const mCat = (currentCat === "Todos" || p.Categoría.includes(currentCat));
-            return mSearch && mCat;
-        }).forEach(p => {
+            
+            // Normalizamos los campos del producto para comparar
+            const textoProducto = simplifyText(`${p.Producto} ${p.Categoría} ${p.Descripción} ${p.Tipo} ${p.Color}`);
+            const mSearch = textoProducto.includes(search);
+            
+            const mCat = (currentCat === "Todos" || (p.Categoría && p.Categoría.split(',').map(c => c.trim()).includes(currentCat)));
+            const mType = (currentType === "Todos" || (p.Tipo && p.Tipo.split(',').map(t => t.trim()).includes(currentType)));
+            
+            return mSearch && mCat && mType;
+        });
+
+        filtrados.forEach(p => {
             html += `
                 <div class="product-card">
                     <div class="product-header">
-                        <div style="color:var(--accent); font-size:0.6rem; font-weight:bold;">${p.Categoría}</div>
+                        <div class="tag-row">
+                            <span class="tag tag-cat">${p.Categoría}</span>
+                            ${p.Tipo ? `<span class="tag">${p.Tipo}</span>` : ''}
+                        </div>
                         <h3 style="margin:5px 0; font-size:1.1rem;">${p.Producto}</h3>
                     </div>
                     <div style="padding:15px; flex-grow:1;">
-                        <p style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">${p.Descripción}</p>
+                        <p style="font-size:0.85rem; color:#bbb; margin-bottom:15px; line-height:1.4;">${p.Descripción || ''}</p>
+                        ${p.Color ? `<div style="font-size:0.75rem; color:var(--accent); margin-bottom:10px;">🎨 Color: ${p.Color}</div>` : ''}
                         <table class="price-table">
-                            <tr><td>Balde de 4 Lts</td><td class="amount">${p["Precio 4lts"]}</td></tr>
-                            <tr><td>Balde de 10 Lts</td><td class="amount">${p["Precio 10lts"]}</td></tr>
-                            <tr><td>Balde de 20 Lts</td><td class="amount">${p["Precio 20lts"]}</td></tr>
+                            ${p["Precio 4lts"] ? `<tr><td>Balde de 4 Lts</td><td class="amount">${p["Precio 4lts"]}</td></tr>` : ''}
+                            ${p["Precio 10lts"] ? `<tr><td>Balde de 10 Lts</td><td class="amount">${p["Precio 10lts"]}</td></tr>` : ''}
+                            ${p["Precio 20lts"] ? `<tr><td>Balde de 20 Lts</td><td class="amount">${p["Precio 20lts"]}</td></tr>` : ''}
                         </table>
                     </div>
-                    <a href="https://wa.me/542214989579" class="btn-whatsapp" target="_blank">Consultá por Whatsapp</a>
+                    <a href="https://wa.me/542214989579?text=Hola!%20Quisiera%20consultar%20por%20${encodeURIComponent(p.Producto)}" 
+                       class="btn-whatsapp" target="_blank">Consultar por WhatsApp</a>
                 </div>`;
         });
-        container.innerHTML = html;
-    }
 
-    document.querySelectorAll('.filter-badge').forEach(b => {
-        b.onclick = function() {
-            document.querySelectorAll('.filter-badge').forEach(x => x.classList.remove('active'));
-            this.classList.add('active');
-            currentCat = this.dataset.cat;
-            render();
-        };
-    });
+        container.innerHTML = html || `<p style="grid-column:1/-1; text-align:center; padding:50px; color:#666;">No se encontraron resultados para "${rawSearch}".</p>`;
+    }
 
     document.getElementById("searchInput").oninput = render;
     window.onload = loadCSV;
 </script>
 </body>
 </html>
-

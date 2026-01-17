@@ -1,32 +1,42 @@
-Producto,Categoría,Descripción,Precio 4lts,Precio 10lts,Precio 20lts
-Látex Económico Interior,Látex,Bajo costo con alto contenido de cargas. Buena blancura.,$29.500,$37.500,$51.500
-Látex Acrílico Interior/Exterior,Látex,Bajo costo con buena blancura y resistencia al frote.,$30.500,$41.500,$58.500
-Látex Premium,Látex,Terminación mate lavable de gran poder cubriente.,$32.500,$45.500,$65.500
-Superlavable Antihongos,Látex,Excelente cubriente mate muy resistente al lavado.,$34.500,$51.500,$79.500
-Ultralavable Antihongos,Látex,Inmejorable poder cubriente mate extremadamente resistente.,$39.500,$62.500,$100.500
-Satinado Antihongos Interior,Látex,Terminación semi-brillo para decoración y protección.,$42.500,$69.500,$115.500
-Recubrimiento Plástico Muros,Impermeabilizante,Resistente flexible y durable - Exterior.,$40.500,$65.500,$107.500
-Muros Termoplástico Semi-brillo,Impermeabilizante,Colores únicos (Rojo Ocre Negro etc).,$40.500,$61.500,$98.500
-Elastomérico Antihongos Brillante,Impermeabilizante,Película elástica para impermeabilizar exteriores.,$44.500,$74.500,$124.500
-Summum Hidrorepelente,Impermeabilizante,Película semielástica muy durable para exterior.,$45.500,$78.500,$131.500
-Especial Cielos Rasos,Especial,Diseñado para cielos rasos permeable al vapor.,$30.500,$41.500,$58.500
-Ultra Antihongos Cielos Rasos,Especial,Buen poder cubriente resistente y durable.,$32.500,$45.500,$65.500
-Tapagoteras Líquido Sellador,Techos,Baja viscosidad para sellar grietas y fisuras.,$34.500,$51.500,$78.500
-Chapas Galvanizadas Base Acuosa,Techos,Decoración y protección de materiales no ferrosos.,$45.500,$78.500,$131.500
-Membrana Supercapa Incolora,Techos,Película protectora de alto rendimiento y durabilidad.,$42.500,$69.500,$116.500
-Membrana Fibrada Antihongos,Techos,Película protectora elástica para techos.,$44.500,$73.500,$121.500
-Membrana Micro Caucho,Techos,Compuesto con neumáticos reciclados transitable.,$36.500,$54.500,$85.500
-Pisos Alto Tránsito Base Acuosa,Pisos,Pintura protectora con buena resistencia al desgaste.,$45.500,$78.500,$131.500
-Piletas Base Acuosa,Piletas,Alta resistencia bajo sumersión acuosa.,$45.500,$78.500,$131.500
-Barniz Base Acuosa,Maderas,Satinado para decoración y protección interior.,$35.500,$52.500,$79.500
-Laca Base Acuosa,Maderas,Film rígido satinado para interior y exterior.,$38.500,$59.500,$95.500
-Esmalte Base Acuosa,Maderas/Metal,Brillante Satinado u Opaco para maderas y metales.,$45.500,$78.500,$131.500
-Esmalte Perlado Metalizado,Maderas/Metal,Efecto nacarado plata oro bronce o cobre.,$58.500,$109.500,$186.500
-Fijador Sellador al Agua,Acondicionador,Uniforma la absorción para posterior aplicación de látex.,$28.500,$37.500,$50.500
-Fijador al Aguarrás,Acondicionador,Alta penetración para superficies polvorientas.,$37.500,$53.500,$80.500
-Masilla para Enduir,Acondicionador,Pasta niveladora para alisado de superficies rugosas.,$30.500,$41.500,$58.500
-Barniz Sintético Ámbar,Sintético,Protección y decoración de maderas interior/exterior.,$45.500,$72.500,$118.500
-Barniz Marino Ámbar,Sintético,Alta protección climática con filtro U.V.,$48.500,$78.500,$128.500
-Antióxido al Cromato,Sintético,Base protectora para metales ferrosos.,$45.500,$72.500,$118.500
-Esmalte Sintético Blanco/Color,Sintético,Protección y decoración de metales y maderas.,$51.500,$91.500,$151.500
-Esmalte 2en1 Convertidor,Sintético,Con inhibidores de óxido y aislantes de humedad.,$55.500,$99.500,$166.500
+Producto,Categoría,Tipo,Color,Descripción,Precio 4lts,Precio 10lts,Precio 20lts
+Látex Económico Interior,Látex,Interior,Blanco,Bajo costo con alto contenido de cargas. Buena blancura. No desprende.,$29.500,$37.500,$51.500
+Látex Acrílico Interior/Exterior,Látex,"Interior, Exterior",Blanco,Bajo costo con buena blancura. Cubritivo y resistencia al frote.,$30.500,$41.500,$58.500
+Látex Premium Interior/Exterior,Látex,"Interior, Exterior",Color,"Terminación mate, lavable, de gran poder cubriente.",$32.500,$45.500,$65.500
+Superlavable Antihongos,Látex,"Interior, Exterior",Color,Excelente cubriente mate muy resistente al lavado.,$34.500,$51.500,$79.500
+Ultralavable Antihongos,Látex,"Interior, Exterior",Color,Inmejorable poder cubriente mate extremadamente resistente.,$39.500,$62.500,$100.500
+Satinado Antihongos Interior,Látex,Interior,Color,Terminación semi-brillo para decoración y protección.,$42.500,$69.500,$115.500
+Muros Antihongos Mate Hidrorepelente,Recubrimiento Plástico Impermeabilizante,Exterior,Color,"Inmejorable poder cubriente, extremadamente resistente, flexible y durable.",$40.500,$65.500,$107.500
+Muros Termoplástico Semi-brillo,Recubrimiento Plástico Impermeabilizante,Exterior,Color,"Colores únicos (Rojo, Ocre, Marrón, Azul, Verde, Negro).",$40.500,$61.500,$98.500
+Elastomérico Antihongos Brillante,Recubrimiento Plástico Impermeabilizante,Exterior,Color,Formador de película elástica protectora para impermeabilizar y decorar superficies exteriores.,$44.500,$74.500,$124.500
+Summum Hidrorepelente Antihongos Brillante,Recubrimiento Plástico Impermeabilizante,Exterior,Color,Película semielástica muy durable para impermeabilizar superficies exteriores.,$45.500,$78.500,$131.500
+Especial ,Cielo Raso,Interior,Blanco,Diseñado para cielos rasos permeable al vapor.,$30.500,$41.500,$58.500
+Ultra Antihongos ,Cielo Raso,Interior,Blanco,Buen poder cubriente resistente y durable.,$32.500,$45.500,$65.500
+Tapagoteras Líquido Sellador,Techos,Exterior,Incoloro,Baja viscosidad para sellar grietas y fisuras en forma verticial,$34.500,$51.500,$78.500
+Chapas Galvanizadas Base Acuosa,Techos,Exterior,Color,Diseñado para la decoración y protección de materiales ferrosos o tratados en forma previa con antioxidantes.,$45.500,$78.500,$131.500
+Membrana Supercapa Antihongos ,"Techos, Membrana",Exterior,Incoloro,Película protectora de alto rendimiento y durabilidad.,$42.500,$69.500,$116.500
+Membrana Fibrada Antihongos,"Techos, Membrana",Exterior,Incoloro,Película protectora elástica para techos.,$44.500,$73.500,$121.500
+Membrana Termoplástica,"Techos, Membrana",Exterior,Rojo Tierra,Película protectora e impermeabilizante para superficies,$36.500,$54.500,$85.500
+Membrana Reflectiva,"Techos, Membrana",Exterior,Aluminio,Película impermeabilizante que transfiere la radiación solar,$54.500,$100.500,$176.500
+Membrana Microcaucho,"Techos, Membrana",Exterior,Negro,Antideslizante. Transitable. Compuesto con neumáticos reciclados y ligantes impermeables.,$36.500,$54.500,$85.500
+Alto Tránsito Base Acuosa,Pisos,Interior,Color,Pintura protectora con buena resistencia al desgaste.,$45.500,$78.500,$131.500
+Solución Microcemento,Pisos,"Interior, Exterior",Color,Alisador de superficies cementicias con el agregado de cemento en relación 4:1. DEBE COMPLETARSE EL TRABAJO CON LACA BASE ACUOSA.,$30.500,$41.500,$58.500
+Piletas Base Acuosa,Piletas,Interior,Color,Alta resistencia bajo sumersión acuosa.,$45.500,$78.500,$131.500
+Pileta Base Acuoso Mate,Piletas,Interior,Azul Burbujeante,Buena resistencia bajo sumersión acuosa.,$42.500,$69.500,$115.500
+Barniz Base Acuosa,Maderas,Interior,Incoloro,Formador de film semi-rígido para decoración y protección satinada de maderas de interior.,$35.500,$52.500,$79.500
+Laca Base Acuosa,Maderas,"Interior, Exterior",Incoloro,Formador de film rígido para decoración y protección satinada de maderas de interior y exterior.,$38.500,$59.500,$95.500
+Esmalte Base Acuosa,"Maderas, Metales","Interior, Exterior",Color,"Pintura de terminación para maderas o superficies ferrosas tratadas previamente con antioxidantes. Acabado brillante, satinado u opaco.",$45.500,$78.500,$131.500
+Esmalte Perlado Metalizado,"Maderas, Metales","Interior, Exterior","Nacar, Plata, Oro, Bronce, Cobre",Pintura de terminación para maderas o superficies ferrosas tratadas previamente con antioxidantes.,$58.500,$109.500,$186.500
+Fijador Sellador al Agua,Acondicionador de superficies,"Interior, Exterior",,Uniforma la absorción para posterior aplicación de látex.,$28.500,$37.500,$50.500
+Fijador al Aguarrás,Acondicionador de superficies,"Interior, Exterior",,Alta penetración para superficies polvorientas. Anti-salitre.,$37.500,$53.500,$80.500
+Masilla para Enduir,Acondicionador de superficies,"Interior, Exterior",,Pasta niveladora para alisado de superficies rugosas.,$30.500,$41.500,$58.500
+Restaurador de superficies,Acondicionador de superficies,"Interior, Exterior",Gris Claro,"Con el agregado de cemento y mediante su aplicación con espátula, se alisan superficies de exterior para un posterior pintado.",$29.500,$39.500,$54.500
+Abrillantador Sistema Bicapa,Impermeabilizante,"Interior, Exterior",,"Otorga brillo, dureza y protección fungicida sobre superficies pintadas al látex.",$35.500,$52.500,$79.500
+Ladrillos a la Vista,Impermeabilizante,"Interior, Exterior",,Formador de film protector impermeable incoloro. Terminación satinada.,$35.500,$52.500,$79.500
+Bloques de Hormigón,Impermeabilizante,"Interior, Exterior",,Formador de film hidrorepelente incoloro. Terminación satinada,$35.500,$52.500,$79.500
+Barniz Sintético,"Sintético, Maderas","Interior, Exterior",Ámbar,Forma película de protección y decora maderas de interior y exterior.,$45.500,$72.500,$118.500
+Barniz Marino Ámbar,"Sintético, Maderas","Interior, Exterior",Ámbar,Alta protección climática con filtro U.V.,$48.500,$78.500,$128.500
+Antióxido al Cromato,"Sintético, Metales","Interior, Exterior",Rojizo,"Base protectora para metales ferrosos, de aplicación previa al pintado.",$45.500,$72.500,$118.500
+Esmalte Sintético,"Sintético, Maderas, Metales","Interior, Exterior",Color,"Protección y decoración de metales y maderas. Acabado brillante, satinado u opaco.",$51.500,$91.500,$151.500
+Esmalte 2 en1 Convertidor,"Sintético, Metales","Interior, Exterior",Color,Con inhibidores de óxido y aislantes de humedad.,$55.500,$99.500,$166.500
+Primer Industrial Corrosivo,"Sintético, Metales","Interior, Exterior",,"Forma una micro-pelicula con aislantes de humedad e inhibidores de óxido. Permmite luego la aplicación de sintéticos,poliuretano, epoxi, alquídico, etc",$60.500,$108.500,$181.500
+Desoxidante - Fosfatizante,"Sintético, Metales","Interior, Exterior",,"Desengrasante, decapante, antisarro, desincrustante.",$44.500,,
