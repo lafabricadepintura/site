@@ -8,113 +8,101 @@
     <style>
         :root { --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; }
-        header { background: #252525; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 15px rgba(0,0,0,0.5); }
-        .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.3rem; }
-        nav a { text-decoration: none; color: white; margin-left: 20px; font-weight: 600; font-size: 0.9rem; }
-        .search-section { background: #151515; padding: 30px 20px; text-align: center; }
-        .search-bar { width: 100%; max-width: 500px; padding: 14px 25px; border-radius: 30px; border: 1px solid #333; background: #222; color: white; outline: none; font-size: 1rem; }
+        header { background: #252525; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo-main { font-weight: bold; text-decoration: none; color: white; }
+        
+        /* Buscador y Badges */
+        .search-section { background: #151515; padding: 20px; text-align: center; }
+        .search-bar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; margin-bottom: 15px; }
+        
+        .filter-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
+        .filter-badge { padding: 8px 16px; border-radius: 20px; background: #333; font-size: 0.8rem; cursor: pointer; border: 1px solid #444; transition: 0.3s; }
+        .filter-badge:hover { background: #444; }
+        .filter-badge.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
+
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .product-card { background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: 0.3s; }
-        .product-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-        .product-header { padding: 20px; background: #333; }
-        .category-tag { font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
-        .price-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .price-table td { padding: 12px 0; border-top: 1px solid #3d3d3d; font-size: 0.95rem; }
-        .amount { text-align: right; font-weight: 700; color: var(--accent); }
-        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 15px; text-decoration: none; font-weight: 800; font-size: 0.9rem; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; }
+        .product-header { padding: 15px; background: #333; }
+        .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .price-table td { padding: 8px 0; border-top: 1px solid #3d3d3d; font-size: 0.9rem; }
+        .amount { text-align: right; font-weight: bold; color: var(--accent); }
+        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <header>
     <a href="../index.html" class="logo-main">LA FÁBRICA <span style="color:var(--accent)">PINTURAS</span></a>
-    <nav>
-        <a href="index.html" style="color:var(--accent)">PRODUCTOS</a>
-        <a href="../colores/index.html">COLORES</a>
-    </nav>
 </header>
 
 <section class="search-section">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar látex, membrana, esmalte...">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto...">
+    <div class="filter-container" id="filterBadges">
+        <div class="filter-badge active" onclick="filtrarCategoria('Todos', this)">Todos</div>
+        <div class="filter-badge" onclick="filtrarCategoria('Látex', this)">Látex</div>
+        <div class="filter-badge" onclick="filtrarCategoria('Impermeabilizante', this)">Muros</div>
+        <div class="filter-badge" onclick="filtrarCategoria('Techos', this)">Techos</div>
+        <div class="filter-badge" onclick="filtrarCategoria('Sintético', this)">Sintéticos</div>
+    </div>
 </section>
 
 <div class="container">
-    <div id="productContainer" class="product-grid">
-        <p id="loading" style="grid-column: 1/-1; text-align: center; color: #666;">Cargando catálogo oficial...</p>
-    </div>
+    <div id="productContainer" class="product-grid"></div>
 </div>
 
 <script>
-    var baseDeDatos = [];
-
-    // Función para limpiar precios y descripciones de etiquetas [cite]
-    function limpiarDato(texto) {
-        if (!texto) return "Consultar";
-        var s = texto.toString();
-        // Si hay un corchete, cortamos todo lo que sigue
-        if (s.indexOf("[") !== -1) {
-            s = s.split("[")[0];
-        }
-        return s.trim();
-    }
+    var datos = [];
+    var catActual = 'Todos';
 
     function cargar() {
         Papa.parse("productos.csv", {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
+            download: true, header: true, skipEmptyLines: true,
             complete: function(res) {
-                baseDeDatos = res.data;
-                dibujar(baseDeDatos);
+                datos = res.data;
+                dibujar();
             }
         });
     }
 
-    function dibujar(lista) {
-        var container = document.getElementById("productContainer");
-        var codes = "";
-
-        for (var i = 0; i < lista.length; i++) {
-            var p = lista[i];
-            var nombre = limpiarDato(p.Producto);
-            
-            // Saltamos filas vacías
-            if (!nombre || nombre === "Consultar") continue;
-
-            codes += '<div class="product-card">';
-            codes += '<div class="product-header">';
-            codes += '<span class="category-tag">' + limpiarDato(p.Categoría) + '</span>';
-            codes += '<h3 style="margin:5px 0">' + nombre + '</h3>';
-            codes += '</div>';
-            codes += '<div style="padding:20px; flex-grow:1">';
-            codes += '<p style="font-size:0.85rem; color:#aaa; margin-bottom:15px; min-height:40px;">' + limpiarDato(p.Descripción) + '</p>';
-            codes += '<table class="price-table">';
-            // Cambiado a "Balde de" y limpieza de precios aplicada
-            codes += '<tr><td>Balde de 4 Lts</td><td class="amount">' + limpiarDato(p["Precio 4lts"]) + '</td></tr>';
-            codes += '<tr><td>Balde de 10 Lts</td><td class="amount">' + limpiarDato(p["Precio 10lts"]) + '</td></tr>';
-            codes += '<tr><td>Balde de 20 Lts</td><td class="amount">' + limpiarDato(p["Precio 20lts"]) + '</td></tr>';
-            codes += '</table>';
-            codes += '</div>';
-            codes += '<a href="https://wa.me/+542214989579" class="btn-whatsapp" target="_blank">CONSULTÁ POR WHATSAPP</a>';
-            codes += '</div>';
-        }
-        container.innerHTML = codes || "<p>No se encontraron productos.</p>";
+    function filtrarCategoria(cat, el) {
+        catActual = cat;
+        document.querySelectorAll('.filter-badge').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        dibujar();
     }
 
-    document.getElementById("searchInput").oninput = function() {
-        var t = this.value.toLowerCase();
-        var f = baseDeDatos.filter(function(item) {
-            return (item.Producto || "").toLowerCase().indexOf(t) > -1 || 
-                   (item.Categoría || "").toLowerCase().indexOf(t) > -1;
+    function dibujar() {
+        var busqueda = document.getElementById("searchInput").value.toLowerCase();
+        var html = "";
+        
+        var filtrados = datos.filter(function(p) {
+            var matchCat = (catActual === 'Todos' || (p.Categoría || "").includes(catActual));
+            var matchBusqueda = (p.Producto || "").toLowerCase().includes(busqueda);
+            return matchCat && matchBusqueda;
         });
-        dibujar(f);
-    };
 
+        filtrados.forEach(function(p) {
+            if(!p.Producto) return;
+            html += '<div class="product-card">';
+            html += '<div class="product-header"><span style="color:var(--accent); font-size:0.7rem; font-weight:bold; text-transform:uppercase">' + p.Categoría + '</span>';
+            html += '<h3 style="margin:5px 0; font-size:1.1rem">' + p.Producto + '</h3></div>';
+            html += '<div style="padding:15px; flex-grow:1">';
+            html += '<p style="font-size:0.8rem; color:#aaa; margin-bottom:10px">' + p.Descripción + '</p>';
+            html += '<table class="price-table">';
+            html += '<tr><td>Balde 4L</td><td class="amount">' + p["Precio 4lts"] + '</td></tr>';
+            html += '<tr><td>Balde 10L</td><td class="amount">' + p["Precio 10lts"] + '</td></tr>';
+            html += '<tr><td>Balde 20L</td><td class="amount">' + p["Precio 20lts"] + '</td></tr>';
+            html += '</table></div>';
+            html += '<a href="https://wa.me/5491100000000" class="btn-whatsapp" target="_blank">CONSULTAR PRECIO</a></div>';
+        });
+        document.getElementById("productContainer").innerHTML = html;
+    }
+
+    document.getElementById("searchInput").oninput = dibujar;
     cargar();
 </script>
 </body>
 </html>
-
 
 
