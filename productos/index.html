@@ -7,62 +7,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root { --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; padding-bottom: 80px; }
         
-        header { 
-            background: #252525; padding: 1rem 2rem; display: flex; 
-            justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 15px rgba(0,0,0,0.5); position: sticky; 
-            top: 0; z-index: 1000; margin: 0; 
-        }
+        header { background: #252525; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 15px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 1000; }
         .logo-main { font-weight: bold; text-decoration: none; color: white; font-size: 1.2rem; }
         nav a { text-decoration: none; color: #bbb; margin-left: 20px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
-        nav a:hover, nav a.active { color: var(--accent); }
+        nav a.active { color: var(--accent); }
 
-        .search-section { 
-            background: #151515; padding: 20px; text-align: center; 
-            position: sticky; top: 57px; z-index: 999; margin: 0;
-            border-top: 1px solid #222;
-        }
+        .search-section { background: #151515; padding: 20px; text-align: center; position: sticky; top: 57px; z-index: 999; border-top: 1px solid #222; }
         .search-container { position: relative; max-width: 500px; margin: 0 auto 15px; }
-        .search-bar { 
-            width: 100%; padding: 12px 45px 12px 20px; border-radius: 25px; 
-            border: 1px solid #333; background: #222; color: white; outline: none; 
-            font-size: 1rem; box-sizing: border-box;
-        }
-        .search-bar:focus { border-color: var(--accent); }
+        .search-bar { width: 100%; padding: 12px 45px 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; font-size: 1rem; box-sizing: border-box; }
         
-        .clear-search {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            background: #444; color: white; border: none; border-radius: 50%;
-            width: 22px; height: 22px; cursor: pointer; display: none;
-            font-size: 12px; line-height: 1; font-weight: bold;
-        }
+        .filter-group { margin-bottom: 10px; }
+        .filter-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto; }
+        .filter-badge { padding: 6px 14px; border-radius: 15px; background: #333; font-size: 0.75rem; cursor: pointer; border: 1px solid #444; color: #eee; transition: 0.2s; }
+        .filter-badge.active { background: var(--accent); color: #000; font-weight: bold; }
 
-        .filter-group { margin-bottom: 12px; }
-        .filter-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto; align-items: center; }
-        .filter-badge { padding: 6px 14px; border-radius: 15px; background: #333; font-size: 0.75rem; cursor: pointer; border: 1px solid #444; color: #eee; transition: 0.2s; text-transform: capitalize; }
-        .filter-badge.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
-        
-        .btn-reset { 
-            padding: 6px 14px; border-radius: 15px; background: transparent; 
-            color: #ff5252; border: 1px solid #ff5252; cursor: pointer; 
-            font-size: 0.7rem; font-weight: bold; margin-left: 10px;
-        }
-
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; min-height: 100vh; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: 0.3s; }
-        .product-card:hover { transform: translateY(-3px); border-color: #555; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .product-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; }
         .product-header { padding: 15px; background: #333; border-bottom: 1px solid #444; }
+        
         .tag-row { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
         .tag { font-size: 0.6rem; font-weight: bold; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: #444; color: #ccc; }
         .tag-cat { background: rgba(139, 195, 74, 0.2); color: var(--accent); }
 
-        .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .price-table td { padding: 10px 0; border-top: 1px solid #3d3d3d; font-size: 0.85rem; }
-        .amount { text-align: right; font-weight: bold; color: var(--accent); font-size: 0.95rem; }
-        .btn-whatsapp { display: block; background: #25d366; color: white; text-align: center; padding: 12px; text-decoration: none; font-weight: bold; font-size: 0.9rem; }
+        .cart-controls { padding: 15px; background: #222; border-top: 1px solid #333; }
+        .input-label { font-size: 0.7rem; color: #888; margin-bottom: 4px; display: block; text-transform: uppercase; }
+        .selector-estilo { width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #444; border-radius: 5px; margin-bottom: 12px; font-size: 0.85rem; outline: none; }
+        
+        .add-row { display: flex; gap: 10px; align-items: center; }
+        .qty-input { width: 60px; padding: 8px; text-align: center; background: #111; border: 1px solid #444; color: var(--accent); font-weight: bold; border-radius: 5px; }
+        .btn-add { flex: 1; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        .cart-floating { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 15px 25px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: none; align-items: center; gap: 10px; z-index: 2000; font-weight: bold; }
+        .cart-count { background: white; color: #25d366; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+        
+        #cartModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: #2a2a2a; padding: 25px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; }
+        .cart-item { border-bottom: 1px solid #3d3d3d; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
+        .btn-close { background: transparent; color: #888; border: 1px solid #444; padding: 10px; width: 100%; border-radius: 5px; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -77,33 +61,55 @@
 
 <section class="search-section">
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar látex, sintético, madera...">
-        <button id="clearBtn" class="clear-search" onclick="clearSearch()">✕</button>
+        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto...">
     </div>
-    
-    <div class="filter-group">
-        <div class="filter-container" id="catBadgeContainer"></div>
-    </div>
-    <div class="filter-group">
-        <div class="filter-container" id="typeBadgeContainer"></div>
-    </div>
+    <div class="filter-group"><div class="filter-container" id="catBadgeContainer"></div></div>
+    <div class="filter-group"><div class="filter-container" id="typeBadgeContainer"></div></div>
 </section>
 
 <div class="container">
     <div id="productContainer" class="product-grid"></div>
 </div>
 
+<div id="cartFloating" class="cart-floating" onclick="toggleModal(true)">
+    <span>Ver Mi Pedido</span>
+    <div class="cart-count" id="cartCount">0</div>
+</div>
+
+<div id="cartModal">
+    <div class="modal-content">
+        <h2 style="margin-top:0; color:var(--accent);">Presupuesto</h2>
+        <div id="cartList"></div>
+        <button class="btn-add" style="margin-top: 25px; width:100%; background:#25d366; color:white; font-size:1.1rem; padding:15px;" onclick="sendToWhatsapp()">
+            Enviar a WhatsApp
+        </button>
+        <button class="btn-close" onclick="toggleModal(false)">Cerrar</button>
+    </div>
+</div>
+
 <script>
     let rawData = [];
+    let paletteData = []; // Aquí guardaremos los colores del otro CSV
+    let cart = [];
     let currentCat = "Todos";
     let currentType = "Todos";
 
-    const simplifyText = (text) => {
-        if (!text) return "";
-        return text.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    };
+    const simplifyText = (text) => text ? text.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 
-    function loadCSV() {
+    // CARGA DE AMBOS CSVS
+    function init() {
+        // Cargar Colores primero
+        Papa.parse("../colores/paleta - Hoja 1.csv", {
+            download: true, header: true, skipEmptyLines: true,
+            complete: function(results) {
+                paletteData = results.data;
+                // Luego cargar Productos
+                loadProducts();
+            }
+        });
+    }
+
+    function loadProducts() {
         Papa.parse("productos.csv", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) {
@@ -115,106 +121,121 @@
     }
 
     function createAllBadges() {
-        const catSet = new Set();
-        const typeSet = new Set();
-        
+        const catSet = new Set(), typeSet = new Set();
         rawData.forEach(p => {
-            // Separamos por comas y limpiamos espacios para generar badges únicos
-            if (p.Categoría) p.Categoría.split(',').forEach(c => { if(c.trim()) catSet.add(c.trim()); });
-            if (p.Tipo) p.Tipo.split(',').forEach(t => { if(t.trim()) typeSet.add(t.trim()); });
+            if (p.Categoría) p.Categoría.split(',').forEach(c => catSet.add(c.trim()));
+            if (p.Tipo) p.Tipo.split(',').forEach(t => typeSet.add(t.trim()));
         });
 
-        // Categorías
-        const catContainer = document.getElementById("catBadgeContainer");
-        let catHtml = `<div class="filter-badge ${currentCat === 'Todos' ? 'active' : ''}" onclick="setCategory('Todos')">Categorías</div>`;
-        Array.from(catSet).sort().forEach(c => {
-            catHtml += `<div class="filter-badge ${currentCat === c ? 'active' : ''}" onclick="setCategory('${c}')">${c}</div>`;
-        });
-        catContainer.innerHTML = catHtml;
-
-        // Usos (Interior / Exterior separados)
-        const typeContainer = document.getElementById("typeBadgeContainer");
-        let typeHtml = `<div class="filter-badge ${currentType === 'Todos' ? 'active' : ''}" onclick="setType('Todos')">Usos</div>`;
-        Array.from(typeSet).sort().forEach(t => {
-            typeHtml += `<div class="filter-badge ${currentType === t ? 'active' : ''}" onclick="setType('${t}')">${t}</div>`;
-        });
-        typeHtml += `<button class="btn-reset" onclick="resetAll()">Limpiar</button>`;
-        typeContainer.innerHTML = typeHtml;
+        const renderBadges = (set, current, setter, containerId) => {
+            let html = `<div class="filter-badge ${current === 'Todos' ? 'active' : ''}" onclick="${setter}('Todos')">Todos</div>`;
+            Array.from(set).sort().forEach(i => html += `<div class="filter-badge ${current === i ? 'active' : ''}" onclick="${setter}('${i}')">${i}</div>`);
+            document.getElementById(containerId).innerHTML = html;
+        };
+        renderBadges(catSet, currentCat, 'setCategory', 'catBadgeContainer');
+        renderBadges(typeSet, currentType, 'setType', 'typeBadgeContainer');
     }
 
-    function setCategory(cat) { currentCat = cat; createAllBadges(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function setType(type) { currentType = type; createAllBadges(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function clearSearch() { document.getElementById("searchInput").value = ""; render(); }
-    
-    function resetAll() { 
-        currentCat = "Todos"; 
-        currentType = "Todos"; 
-        document.getElementById("searchInput").value = ""; 
-        createAllBadges(); 
-        render(); 
-        window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    function setCategory(cat) { currentCat = cat; createAllBadges(); render(); }
+    function setType(t) { currentType = t; createAllBadges(); render(); }
+
+    function addToCart(index) {
+        const p = rawData[index];
+        const sizeSelect = document.getElementById(`size-${index}`);
+        const colorSelect = document.getElementById(`color-${index}`);
+        const qtyInput = document.getElementById(`qty-${index}`);
+
+        cart.push({
+            name: p.Producto,
+            size: sizeSelect.value,
+            color: colorSelect ? colorSelect.value : 'N/A',
+            qty: parseInt(qtyInput.value)
+        });
+        updateCartUI();
+        qtyInput.value = 1;
+        alert("¡Agregado!");
+    }
+
+    function updateCartUI() {
+        const count = cart.reduce((acc, item) => acc + item.qty, 0);
+        document.getElementById('cartCount').innerText = count;
+        document.getElementById('cartFloating').style.display = count > 0 ? 'flex' : 'none';
+        let html = "";
+        cart.forEach((item, i) => {
+            html += `<div class="cart-item">
+                <div><strong>${item.name}</strong><br><small>${item.size} | Color: ${item.color}</small></div>
+                <div>x${item.qty} <button onclick="removeItem(${i})" style="color:#ff5252; background:none; border:none; cursor:pointer; margin-left:10px;">✕</button></div>
+            </div>`;
+        });
+        document.getElementById('cartList').innerHTML = html || "Vacío";
+    }
+
+    function removeItem(i) { cart.splice(i, 1); updateCartUI(); }
+    function toggleModal(show) { document.getElementById('cartModal').style.display = show ? 'flex' : 'none'; }
+
+    function sendToWhatsapp() {
+        let text = "Hola La Fábrica! Quisiera presupuesto por:\n\n";
+        cart.forEach(item => text += `• ${item.name} (${item.size})\n  Color: ${item.color} | Cant: ${item.qty}\n\n`);
+        window.open(`https://wa.me/542214989579?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     function render() {
         const container = document.getElementById("productContainer");
-        const rawSearch = document.getElementById("searchInput").value;
-        const search = simplifyText(rawSearch);
-        const clearBtn = document.getElementById("clearBtn");
-        
-        clearBtn.style.display = rawSearch.length > 0 ? "block" : "none";
+        const search = simplifyText(document.getElementById("searchInput").value);
         let html = "";
 
-        const filtrados = rawData.filter(p => {
-            if (!p.Producto) return false;
-            
-            const textoProducto = simplifyText(`${p.Producto} ${p.Categoría} ${p.Descripción} ${p.Tipo} ${p.Color}`);
-            const mSearch = textoProducto.includes(search);
-            
-            const mCat = (currentCat === "Todos" || (p.Categoría && p.Categoría.split(',').map(c => c.trim()).includes(currentCat)));
-            const mType = (currentType === "Todos" || (p.Tipo && p.Tipo.split(',').map(t => t.trim()).includes(currentType)));
-            
-            return mSearch && mCat && mType;
-        });
+        rawData.forEach((p, index) => {
+            if (!p.Producto) return;
+            if (!simplifyText(`${p.Producto} ${p.Categoría} ${p.Descripción} ${p.Tipo}`).includes(search)) return;
+            if (currentCat !== "Todos" && !p.Categoría.includes(currentCat)) return;
+            if (currentType !== "Todos" && !p.Tipo.includes(currentType)) return;
 
-        filtrados.forEach(p => {
-            // Lógica para separar Categorías en badges individuales
-            const categoriasHTML = p.Categoría ? p.Categoría.split(',').map(cat => 
-                `<span class="tag tag-cat">${cat.trim()}</span>`
-            ).join('') : '';
+            const cats = p.Categoría.split(',').map(c => `<span class="tag tag-cat">${c.trim()}</span>`).join('');
+            const types = p.Tipo.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('');
 
-            // Lógica para separar Tipos (Interior/Exterior) en badges individuales
-            const tiposHTML = p.Tipo ? p.Tipo.split(',').map(tipo => 
-                `<span class="tag">${tipo.trim()}</span>`
-            ).join('') : '';
+            // LÓGICA DINÁMICA DE COLOR
+            let colorHTML = "";
+            if (p.Color === "Color") {
+                // Si el producto dice "Color", cargamos TODOS los colores de la paleta
+                const opciones = paletteData.map(c => `<option value="${c.color_name}">${c.color_name} (${c.color_id})</option>`).join('');
+                colorHTML = `<label class="input-label">Elegir de la Paleta:</label>
+                             <select id="color-${index}" class="selector-estilo">${opciones}</select>`;
+            } else if (p.Color) {
+                // Si tiene colores específicos en el CSV de productos, usamos esos
+                const especificos = p.Color.split(',').map(c => `<option value="${c.trim()}">${c.trim()}</option>`).join('');
+                colorHTML = `<label class="input-label">Color:</label>
+                             <select id="color-${index}" class="selector-estilo">${especificos}</select>`;
+            }
 
             html += `
                 <div class="product-card">
                     <div class="product-header">
-                        <div class="tag-row">
-                            ${categoriasHTML}
-                            ${tiposHTML}
-                        </div>
-                        <h3 style="margin:5px 0; font-size:1.1rem;">${p.Producto}</h3>
+                        <div class="tag-row">${cats}${types}</div>
+                        <h3 style="margin:0; font-size:1.1rem;">${p.Producto}</h3>
                     </div>
                     <div style="padding:15px; flex-grow:1;">
-                        <p style="font-size:0.85rem; color:#bbb; margin-bottom:15px; line-height:1.4;">${p.Descripción || ''}</p>
-                        ${p.Color ? `<div style="font-size:0.75rem; color:var(--accent); margin-bottom:10px;">🎨 Color: ${p.Color}</div>` : ''}
-                        <table class="price-table">
-                            ${p["Precio 4lts"] ? `<tr><td>Balde de 4 Lts</td><td class="amount">${p["Precio 4lts"]}</td></tr>` : ''}
-                            ${p["Precio 10lts"] ? `<tr><td>Balde de 10 Lts</td><td class="amount">${p["Precio 10lts"]}</td></tr>` : ''}
-                            ${p["Precio 20lts"] ? `<tr><td>Balde de 20 Lts</td><td class="amount">${p["Precio 20lts"]}</td></tr>` : ''}
-                        </table>
+                        <p style="font-size:0.8rem; color:#aaa; margin-bottom:15px;">${p.Descripción || ''}</p>
+                        <label class="input-label">Tamaño:</label>
+                        <select id="size-${index}" class="selector-estilo">
+                            ${p["Precio 4lts"] ? `<option value="4 Lts">4 Lts - ${p["Precio 4lts"]}</option>` : ''}
+                            ${p["Precio 10lts"] ? `<option value="10 Lts">10 Lts - ${p["Precio 10lts"]}</option>` : ''}
+                            ${p["Precio 20lts"] ? `<option value="20 Lts">20 Lts - ${p["Precio 20lts"]}</option>` : ''}
+                        </select>
+                        ${colorHTML}
                     </div>
-                    <a href="https://wa.me/542214989579?text=Hola!%20Quisiera%20consultar%20por%20${encodeURIComponent(p.Producto)}" 
-                       class="btn-whatsapp" target="_blank">Consultar por WhatsApp</a>
+                    <div class="cart-controls">
+                        <div class="add-row">
+                            <input type="number" id="qty-${index}" class="qty-input" value="1" min="1">
+                            <button class="btn-add" onclick="addToCart(${index})">Agregar al pedido</button>
+                        </div>
+                    </div>
                 </div>`;
         });
-
-        container.innerHTML = html || `<p style="grid-column:1/-1; text-align:center; padding:50px; color:#666;">No se encontraron resultados para "${rawSearch}".</p>`;
+        container.innerHTML = html;
     }
 
     document.getElementById("searchInput").oninput = render;
-    window.onload = loadCSV;
+    window.onload = init; // Llamamos a la inicialización doble
 </script>
 </body>
 </html>
