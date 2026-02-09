@@ -18,36 +18,21 @@
         .search-container { position: relative; max-width: 500px; margin: 0 auto 15px; }
         .search-bar { width: 100%; padding: 12px 45px 12px 20px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; font-size: 1rem; box-sizing: border-box; }
         
-        /* ESTILOS FILTROS RESPONSIVE */
+        /* FILTROS RESPONSIVE */
         .filter-toggle {
-            display: none; /* Oculto en PC */
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin: 0 auto;
-            cursor: pointer;
-            font-size: 0.85rem;
+            display: none; background: var(--accent); color: #000; border: none; padding: 10px 20px;
+            border-radius: 20px; font-weight: bold; margin: 0 auto; cursor: pointer; font-size: 0.85rem;
         }
-
         .filter-group { margin-bottom: 10px; }
         .filter-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto; }
         .filter-badge { padding: 6px 14px; border-radius: 15px; background: #333; font-size: 0.75rem; cursor: pointer; border: 1px solid #444; color: #eee; transition: 0.2s; }
         .filter-badge.active { background: var(--accent); color: #000; font-weight: bold; }
 
         @media (max-width: 768px) {
-            .filter-toggle { display: block; } /* Mostrar en móviles */
+            .filter-toggle { display: block; }
             .filters-wrapper {
-                display: none; /* Colapsado por defecto */
-                flex-direction: column;
-                gap: 15px;
-                margin-top: 15px;
-                background: #1a1a1a;
-                padding: 15px;
-                border-radius: 12px;
-                border: 1px solid #333;
+                display: none; flex-direction: column; gap: 15px; margin-top: 15px;
+                background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333;
             }
             .filters-wrapper.active { display: flex; }
         }
@@ -76,6 +61,17 @@
         .modal-content { background: #2a2a2a; padding: 25px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; }
         .cart-item { border-bottom: 1px solid #3d3d3d; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
         .btn-close { background: transparent; color: #888; border: 1px solid #444; padding: 10px; width: 100%; border-radius: 5px; margin-top: 15px; cursor: pointer; }
+
+        /* ESTILOS DEL TOAST */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: #333; color: white; padding: 12px 25px; border-radius: 10px;
+            border-left: 5px solid var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.9rem;
+            animation: slideIn 0.3s ease forwards, fadeOut 0.5s ease 2.5s forwards;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
     </style>
 </head>
 <body>
@@ -88,13 +84,13 @@
     </nav>
 </header>
 
+<div id="toast-container"></div>
+
 <section class="search-section">
     <div class="search-container">
         <input type="text" id="searchInput" class="search-bar" placeholder="Buscar producto...">
     </div>
-
     <button class="filter-toggle" onclick="toggleFilters()">☰ Filtrar por Categoría / Tipo</button>
-
     <div id="filtersWrapper" class="filters-wrapper">
         <div class="filter-group"><div class="filter-container" id="catBadgeContainer"></div></div>
         <div class="filter-group"><div class="filter-container" id="typeBadgeContainer"></div></div>
@@ -167,21 +163,9 @@
         renderBadges(typeSet, currentType, 'setType', 'typeBadgeContainer');
     }
 
-    // Modificadas para que cierren el menú en móviles tras elegir
-    function setCategory(cat) { 
-        currentCat = cat; 
-        createAllBadges(); 
-        render(); 
-        autoCloseFilters();
-    }
-    function setType(t) { 
-        currentType = t; 
-        createAllBadges(); 
-        render(); 
-        autoCloseFilters();
-    }
+    function setCategory(cat) { currentCat = cat; createAllBadges(); render(); autoCloseFilters(); }
+    function setType(t) { currentType = t; createAllBadges(); render(); autoCloseFilters(); }
 
-    // Lógica del menú colapsable
     function toggleFilters() {
         const wrapper = document.getElementById('filtersWrapper');
         wrapper.classList.toggle('active');
@@ -196,21 +180,47 @@
         }
     }
 
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `✅ ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 3000);
+    }
+
+    // FUNCIÓN MEJORADA: EVITA DUPLICADOS Y SUMA CANTIDADES
     function addToCart(index) {
         const p = rawData[index];
         const sizeSelect = document.getElementById(`size-${index}`);
         const colorSelect = document.getElementById(`color-${index}`);
         const qtyInput = document.getElementById(`qty-${index}`);
+        
+        const selectedSize = sizeSelect.value;
+        const selectedColor = colorSelect ? colorSelect.value : 'N/A';
+        const selectedQty = parseInt(qtyInput.value);
 
-        cart.push({
-            name: p.Producto,
-            size: sizeSelect.value,
-            color: colorSelect ? colorSelect.value : 'N/A',
-            qty: parseInt(qtyInput.value)
-        });
+        // BUSCAMOS SI YA EXISTE
+        const existingItem = cart.find(item => 
+            item.name === p.Producto && 
+            item.size === selectedSize && 
+            item.color === selectedColor
+        );
+
+        if (existingItem) {
+            existingItem.qty += selectedQty;
+        } else {
+            cart.push({
+                name: p.Producto,
+                size: selectedSize,
+                color: selectedColor,
+                qty: selectedQty
+            });
+        }
+
         updateCartUI();
+        showToast(`${p.Producto} actualizado`);
         qtyInput.value = 1;
-        alert("¡Agregado!");
     }
 
     function updateCartUI() {
@@ -240,7 +250,6 @@
         const container = document.getElementById("productContainer");
         const search = simplifyText(document.getElementById("searchInput").value);
         let html = "";
-
         rawData.forEach((p, index) => {
             if (!p.Producto) return;
             if (!simplifyText(`${p.Producto} ${p.Categoría} ${p.Descripción} ${p.Tipo}`).includes(search)) return;
@@ -261,8 +270,7 @@
                              <select id="color-${index}" class="selector-estilo">${especificos}</select>`;
             }
 
-            html += `
-                <div class="product-card">
+            html += `<div class="product-card">
                     <div class="product-header">
                         <div class="tag-row">${cats}${types}</div>
                         <h3 style="margin:0; font-size:1.1rem;">${p.Producto}</h3>
