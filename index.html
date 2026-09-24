@@ -1,77 +1,375 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Fábrica Pinturas | Inicio</title>
+    <title>Catálogo Digital de Colores | La Fábrica Pinturas</title>
+    <meta name="description" content="Muestrario oficial de más de 3.000 colores de La Fábrica Pinturas. Filtra por familias y tonos, simula iluminación y pide tu color directo por WhatsApp.">
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <style>
-        :root { --primary: #ffffff; --accent: #8bc34a; --bg: #1e1e1e; --card-bg: #2a2a2a; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: white; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        header { background: #252525; padding: 40px 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .logo-main { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 0; }
-        .logo-accent { color: var(--accent); }
-        .container { flex: 1; display: flex; align-items: center; justify-content: center; gap: 30px; padding: 40px; flex-wrap: wrap; }
-        .card { background: var(--card-bg); width: 320px; padding: 40px; border-radius: 20px; text-align: center; text-decoration: none; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid transparent; }
-        .card:hover { transform: translateY(-10px); border-color: var(--accent); }
-        .icon { font-size: 50px; margin-bottom: 20px; display: block; }
-        .card p { color: #bbb; line-height: 1.6; }
-        .btn { display: inline-block; background: var(--accent); color: #1e1e1e; padding: 12px 30px; border-radius: 30px; font-weight: bold; margin-top: 20px; text-transform: uppercase; }
-        
-.cart-floating-universal {
-    position: fixed; bottom: 20px; right: 20px; background: #25d366; 
-    color: white; padding: 15px 25px; border-radius: 50px; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: none; align-items: center; 
-    gap: 10px; z-index: 9999; font-weight: bold; transition: 0.3s;
-}
-#cartCountUniversal {
-    background: white; color: #4b25d3; border-radius: 50%; 
-    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
-}
-.cart-modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.85); z-index: 10000; display: none; 
-    justify-content: center; align-items: center;
-}
-.cart-modal-content {
-    background: #2a2a2a; padding: 25px; border-radius: 15px; width: 90%; 
-    max-width: 450px; max-height: 80vh; overflow-y: auto; color: white;
-}
-.cart-item-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid #444; font-size: 0.9rem;
-}
-.btn-remove { background: none; border: none; color: #ff5252; cursor: pointer; font-size: 1.1rem; margin-left: 10px; }
-.btn-send-wa { width: 100%; background: #25d366; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 20px; cursor: pointer; }
-.btn-close-cart { width: 100%; background: transparent; color: #888; border: none; padding: 10px; cursor: pointer; }
-        footer { text-align: center; padding: 20px; color: #666; font-size: 0.8rem; }
-    </style>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f7fee7',
+                            100: '#ecfccb',
+                            400: '#a3e635',
+                            500: '#84cc16',
+                            600: '#65a30d',
+                        },
+                        surface: {
+                            950: '#070a12',
+                            900: '#0b0f19',
+                            850: '#111827',
+                            800: '#1e293b',
+                            750: '#283548',
+                            700: '#334155',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css?v=20260923-19">
+    
+    <!-- Data Source -->
+    <script src="data/data.js?v=20260923-7"></script>
 </head>
-<body>
-    <header>
-        <h1 class="logo-main">LA FÁBRICA <span class="logo-accent">PINTURAS</span></h1>
-        <p style="color: #888;">Catálogo y Precios Oficiales 2026</p>
+<body class="bg-surface-900 text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-surface-950/90 backdrop-blur-md border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4">
+            
+            <!-- Brand Logo -->
+            <a href="#catalogo" onclick="navigateToCatalog(); return false;" class="flex items-center gap-2 group shrink-0" aria-label="Ir al inicio del catálogo">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                    <i data-lucide="palette" class="w-5 h-5 text-slate-950 stroke-[2.5]"></i>
+                </div>
+                <div class="leading-tight">
+                    <span class="font-extrabold tracking-tight text-white text-base sm:text-lg">LA FÁBRICA</span>
+                    <span class="text-brand-400 font-bold text-base sm:text-lg ml-0.5 sm:ml-1">PINTURAS</span>
+                </div>
+            </a>
+
+            <!-- Search Bar (Desktop / Tablet in Header) -->
+            <div id="headerSearchWrapper" class="flex-1 max-w-sm md:max-w-md hidden md:block mx-2">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <input type="text" id="headerSearchInput" placeholder="Buscar color, código (ej: 71YY, Rojo)..." 
+                           class="w-full pl-10 pr-9 py-2 bg-surface-850/90 border border-surface-700 rounded-full text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                    <button id="headerClearSearch" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white" title="Limpiar búsqueda">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- WhatsApp Direct Contact Button -->
+            <div class="flex items-center gap-2 shrink-0">
+                <a href="https://wa.me/542214989579" target="_blank" rel="noopener noreferrer" 
+                   class="px-3 sm:px-3.5 py-2 text-xs font-bold rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/30 flex items-center gap-1.5 sm:gap-2 transition shadow-sm cursor-pointer">
+                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.072-2.115-.515-1.815-.75-2.983-2.593-3.074-2.714-.09-.12-1.02-1.357-1.02-2.587 0-1.23.645-1.838.875-2.088.23-.25.503-.312.671-.312.167 0 .335.002.482.01.155.008.362-.059.566.431.21.503.714 1.745.776 1.871.062.127.104.275.02.441-.082.167-.125.27-.249.417-.125.147-.263.329-.376.442-.125.125-.255.26-.11.51.144.25.641 1.057 1.374 1.71 0.943.84 1.737 1.101 1.986 1.226.25.125.395.104.542-.062.146-.167.625-.729.791-.98.167-.25.334-.209.563-.125.23.084 1.458.688 1.708.813.25.125.417.188.479.292.062.104.062.604-.082 1.009z"/>
+                    </svg>
+                    <span class="hidden sm:inline">WhatsApp</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar (Visible on small screens) -->
+        <div id="mobileSearchWrapper" class="md:hidden px-4 pb-3">
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                <input type="text" id="mobileSearchInput" placeholder="Buscar color o código..." 
+                       class="w-full pl-9 pr-8 py-2 bg-surface-850 border border-surface-700 rounded-full text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-500">
+                <button id="mobileClearSearch" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white" title="Limpiar búsqueda">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+        </div>
     </header>
-    <div class="container">
-        <a href="/productos/" class="card">
-            <span class="icon">📦</span>
-            <h2>PRODUCTOS</h2>
-            <p>Precios actualizados de Látex, Impermeabilizantes y Esmaltes.</p>
-            <span class="btn">Ver Catálogo</span>
-        </a>
-        <a href="/colores/" class="card">
-            <span class="icon">🎨</span>
-            <h2>COLORES</h2>
-            <p>Explora nuestra gama completa y códigos maestros.</p>
-            <span class="btn">Ver Gama</span>
-        </a>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: CATALOG VIEW (COLORES)             -->
+        <!-- ========================================== -->
+        <section id="catalogView" class="space-y-6">
+
+            <!-- Filter Controls (Alba / AkzoNobel Style) -->
+            <div class="bg-surface-850 border border-surface-800 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl">
+                
+                <!-- 1. Tonalidades (Hue Swatches) -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                            <i data-lucide="palette" class="w-4 h-4 text-brand-400"></i>
+                            Tonalidades de Color
+                        </span>
+                        <button onclick="resetFilters()" class="text-xs font-semibold text-rose-400 hover:text-rose-300 transition flex items-center gap-1 cursor-pointer">
+                            <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                            <span>Restablecer</span>
+                        </button>
+                    </div>
+                    <div id="albaHueContainer" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+                        <!-- Populated by JavaScript with circular hue swatches -->
+                    </div>
+                </div>
+
+                <!-- 2. Tone Pills + Sort + Results Counter -->
+                <div class="pt-3 border-t border-surface-800 flex flex-wrap items-center justify-between gap-3">
+                    
+                    <!-- Tone Pills (Multi-Selectable) -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-semibold text-slate-400 mr-1">Tono:</span>
+                        <button onclick="toggleToneFilter('todos')" data-tone="todos" class="tone-pill px-2.5 py-1 text-xs rounded-lg bg-surface-750 font-medium text-slate-300 hover:bg-surface-700 border border-surface-700">Todos</button>
+                        <button onclick="toggleToneFilter('Claro')" data-tone="Claro" class="tone-pill px-2.5 py-1 text-xs rounded-lg bg-surface-800 font-medium text-slate-300 hover:bg-surface-700 border border-surface-700">☀️ Claros</button>
+                        <button onclick="toggleToneFilter('Medio')" data-tone="Medio" class="tone-pill px-2.5 py-1 text-xs rounded-lg bg-surface-800 font-medium text-slate-300 hover:bg-surface-700 border border-surface-700">🌓 Medios</button>
+                        <button onclick="toggleToneFilter('Oscuro')" data-tone="Oscuro" class="tone-pill px-2.5 py-1 text-xs rounded-lg bg-surface-800 font-medium text-slate-300 hover:bg-surface-700 border border-surface-700">🌑 Oscuros</button>
+                        <button onclick="toggleToneFilter('Pastel / Suave')" data-tone="Pastel / Suave" class="tone-pill px-2.5 py-1 text-xs rounded-lg bg-surface-800 font-medium text-slate-300 hover:bg-surface-700 border border-surface-700">🌸 Pasteles</button>
+                        <button onclick="toggleToneFilter('Intenso / Vivo')" data-tone="Intenso / Vivo" class="tone-pill px-2.5 py-1 text-xs rounded-lg bg-surface-800 font-medium text-slate-300 hover:bg-surface-700 border border-surface-700">🔥 Intensos</button>
+                    </div>
+
+                    <!-- Sort Dropdown & Results Counter -->
+                    <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                        <span id="resultsCounter" class="text-xs font-semibold text-slate-400">
+                            Cargando colores...
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <label for="sortSelect" class="text-[11px] font-semibold text-slate-400">Ordenar:</label>
+                            <select id="sortSelect" onchange="applySorting(this.value)" class="bg-surface-800 border border-surface-700 text-xs text-slate-200 rounded-lg px-2.5 py-1 focus:outline-none focus:border-brand-500">
+                                <option value="popular">★ Populares primero</option>
+                                <option value="light-asc">De más Claro a Oscuro</option>
+                                <option value="light-desc">De más Oscuro a Claro</option>
+                                <option value="name-asc">Nombre (A-Z)</option>
+                                <option value="code-asc">Por Código</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Active Multi-Filters Bar & Share Link -->
+            <div id="activeFiltersBar" class="hidden bg-surface-850 border border-brand-500/30 rounded-2xl p-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mr-1 shrink-0">
+                        <i data-lucide="filter" class="w-3.5 h-3.5 text-brand-400"></i>
+                        <span>Filtros aplicados:</span>
+                    </span>
+                    <div id="activeFilterTags" class="flex flex-wrap items-center gap-1.5">
+                        <!-- Populated dynamically by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                    <button onclick="resetFilters()" 
+                            class="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-rose-400 hover:bg-surface-800 border border-transparent hover:border-surface-700 transition flex items-center gap-1 cursor-pointer">
+                        <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                        <span>Limpiar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Colors Grid Container -->
+            <div id="colorsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                <!-- Color Cards Rendered Dynamically -->
+            </div>
+
+            <!-- Infinite Scroll / Load More -->
+            <div id="loadMoreSection" class="text-center py-6">
+                <button id="btnLoadMore" onclick="loadMoreColors()" class="px-6 py-2.5 bg-surface-800 hover:bg-surface-750 border border-surface-700 rounded-xl text-xs font-bold text-slate-200 transition">
+                    Cargar más colores...
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: DETAIL VIEW (COLOR INDIVIDUAL)     -->
+        <!-- ========================================== -->
+        <section id="detailView" class="hidden space-y-6 animate-pop-in">
+            
+            <!-- Navigation Back Bar -->
+            <div class="flex items-center justify-between">
+                <button onclick="navigateToCatalog()" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white bg-surface-800 hover:bg-surface-700 border border-surface-700 rounded-xl transition cursor-pointer">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Volver a la Paleta</span>
+                </button>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="shareCurrentColor()" class="px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white bg-surface-800 hover:bg-surface-700 border border-surface-700 rounded-xl transition flex items-center gap-1.5 cursor-pointer" title="Compartir enlace de este color">
+                        <i data-lucide="share-2" class="w-4 h-4"></i>
+                        <span>Compartir Color</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detail Grid Layout: 2 Columns -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Left Column: Visual Swatch, Room Simulator & Harmonies -->
+                <div class="lg:col-span-5 space-y-4">
+                    
+                    <!-- Main Swatch Card -->
+                    <div class="bg-surface-850 border border-surface-800 rounded-2xl p-4 shadow-xl space-y-4">
+                        
+                        <!-- Toggle: Swatch vs Room Scene -->
+                        <div class="flex rounded-xl bg-surface-800 p-1 border border-surface-750">
+                            <button id="tabSwatch" onclick="switchVisualMode('swatch')" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition bg-surface-700 text-white shadow">
+                                Muestra de Pintura
+                            </button>
+                            <button id="tabRoom" onclick="switchVisualMode('room')" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white">
+                                En Habitación (Simulador)
+                            </button>
+                        </div>
+
+                        <!-- Visual Area: Swatch -->
+                        <div id="visualSwatchContainer" class="relative rounded-xl overflow-hidden h-72 sm:h-80 border border-surface-750 flex flex-col justify-between p-4 transition-all duration-300 light-day">
+                            <div class="flex justify-between items-start">
+                                <span id="detailPopularBadge" class="hidden px-2.5 py-1 text-[11px] font-black rounded-lg bg-black/40 text-brand-400 backdrop-blur-md border border-brand-500/40">
+                                    ★ POPULAR
+                                </span>
+                                <span id="detailFamilyTag" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-black/40 text-white backdrop-blur-md">
+                                    Familia
+                                </span>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-white space-y-0.5 max-w-[85%]">
+                                <p id="detailOverlayName" class="font-extrabold text-base tracking-tight"></p>
+                                <p id="detailOverlayCode" class="text-xs text-slate-300 font-mono"></p>
+                            </div>
+                        </div>
+
+                        <!-- Visual Area: Room Scene Simulator (Hidden by default) -->
+                        <div id="visualRoomContainer" class="hidden room-scene">
+                            <div id="roomWall" class="room-wall light-day"></div>
+                            <div class="room-shadow-ambient"></div>
+                            <div class="room-lamp"></div>
+                            <div class="room-frame"></div>
+                            <div class="room-floor"></div>
+                            <div class="room-furniture-sofa"></div>
+                        </div>
+
+                        <!-- Lighting Simulator Controls -->
+                        <div class="space-y-1.5 pt-2 border-t border-surface-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                                    <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-400"></i>
+                                    Simulador de Iluminación
+                                </span>
+                                <span id="activeLightLabel" class="text-[11px] font-semibold text-brand-400">Luz Natural (6500K)</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="setLighting('day')" id="btnLightDay" class="py-2 px-2 rounded-xl text-xs font-bold border transition bg-brand-500/10 border-brand-500 text-brand-400">
+                                    ☀️ Luz Natural
+                                </button>
+                                <button onclick="setLighting('warm')" id="btnLightWarm" class="py-2 px-2 rounded-xl text-xs font-semibold border transition bg-surface-800 border-surface-700 text-slate-300 hover:border-amber-400">
+                                    💡 Luz Cálida
+                                </button>
+                                <button onclick="setLighting('cool')" id="btnLightCool" class="py-2 px-2 rounded-xl text-xs font-semibold border transition bg-surface-800 border-surface-700 text-slate-300 hover:border-cyan-400">
+                                    🏢 Luz Fría
+                                </button>
+                            </div>
+                            <p class="text-[10px] text-slate-400 text-center pt-1">
+                                Comprueba cómo cambia la tonalidad de la pintura según la luz de tu ambiente.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- Suggested Color Harmonies -->
+                    <div class="bg-surface-850 border border-surface-800 rounded-2xl p-4 shadow-lg space-y-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-400"></i>
+                            Ideas de Combinación & Acentos
+                        </span>
+                        <div id="harmoniesContainer" class="grid grid-cols-3 gap-2">
+                            <!-- Populated with Monochromatic, Complementary & Accent swatches -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Specs, Similar Colors & WhatsApp Button -->
+                <div class="lg:col-span-7 space-y-5">
+                    
+                    <!-- Color Title & Badges -->
+                    <div class="bg-surface-850 border border-surface-800 rounded-2xl p-5 shadow-xl space-y-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span id="detailBadgeCode" class="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-surface-800 text-brand-400 border border-surface-700"></span>
+                                <span id="detailBadgeType" class="text-xs font-semibold text-slate-400"></span>
+                            </div>
+                            <h2 id="detailTitle" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight"></h2>
+                        </div>
+                    </div>
+
+                    <!-- Similar Colors (CIELAB deltaE) -->
+                    <div class="bg-surface-850 border border-surface-800 rounded-2xl p-5 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-400"></i>
+                                Colores Similares del Catálogo
+                            </span>
+                            <span class="text-[11px] text-slate-400">Calculado por proximidad tonal</span>
+                        </div>
+                        <p class="text-xs text-slate-400">
+                            ¿Buscas un matiz un poco más claro o con otro subtono? Estos son los tonos más parecidos disponibles:
+                        </p>
+                        
+                        <div id="similarColorsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                            <!-- Rendered Dynamically with similar items -->
+                        </div>
+                    </div>
+
+                    <!-- Direct WhatsApp Order Button -->
+                    <div class="bg-surface-850 border border-surface-800 rounded-2xl p-5 shadow-xl">
+                        <button onclick="orderColorViaWhatsApp()" 
+                                class="w-full py-4 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-extrabold text-base sm:text-lg flex items-center justify-center gap-3 transition-all duration-200 shadow-xl shadow-[#25D366]/25 hover:shadow-[#25D366]/40 hover:scale-[1.01] active:scale-[0.99] cursor-pointer group">
+                            <svg class="w-6 h-6 fill-current shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.072-2.115-.515-1.815-.75-2.983-2.593-3.074-2.714-.09-.12-1.02-1.357-1.02-2.587 0-1.23.645-1.838.875-2.088.23-.25.503-.312.671-.312.167 0 .335.002.482.01.155.008.362-.059.566.431.21.503.714 1.745.776 1.871.062.127.104.275.02.441-.082.167-.125.27-.249.417-.125.147-.263.329-.376.442-.125.125-.255.26-.11.51.144.25.641 1.057 1.374 1.71 0.943.84 1.737 1.101 1.986 1.226.25.125.395.104.542-.062.146-.167.625-.729.791-.98.167-.25.334-.209.563-.125.23.084 1.458.688 1.708.813.25.125.417.188.479.292.062.104.062.604-.082 1.009z"/>
+                            </svg>
+                            <span>Pedir este color por WhatsApp</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toastNotification" class="toast-notice fixed bottom-5 right-5 z-50 bg-surface-800 text-white px-4 py-2.5 rounded-xl border border-brand-500/50 shadow-2xl flex items-center gap-2 text-xs font-semibold">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-brand-400"></i>
+        <span id="toastMessage">Acción completada</span>
     </div>
-    <footer>&copy; 2026 La Fábrica Pinturas</footer>
-    <script src="../js/cart.js"></script>
+
+    <!-- Main Logic Script -->
+    <script src="app.js?v=20260923-19"></script>
 </body>
 </html>
-
-
-
